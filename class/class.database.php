@@ -7,9 +7,9 @@ class Database
     // specify your own database credentials
     public $conn;
     private $servdb = "localhost";
-    private $database = "empre01";
-    private $userdb = "basico";
-    private $passdb = "temporal";
+    private $database = "rodeli";
+    private $userdb = "root";
+    private $passdb = "root";
     private $opciones = array(
                             PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
                         );

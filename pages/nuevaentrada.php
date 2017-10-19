@@ -3,7 +3,8 @@
 $arrCategoria = $misc->listarCategorias()->fetchAll(PDO::FETCH_ASSOC); // json_decode para Objetos se denife True, para Arreglos simples False.
 $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
 
-$arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('tipos_documentos')->fetch(PDO::FETCH_ASSOC)['des_data']),true);
+$arrTdocumentos = json_decode(base64_decode($misc->consultaDesplegables('tipos_documentos')->fetch(PDO::FETCH_ASSOC)['des_data']),true);
+$arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_movimientos')->fetch(PDO::FETCH_ASSOC)['des_data']),true);
 
 ?>
 	<div class="right_col" role="main">
@@ -28,7 +29,7 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('tipos_docu
                   <label class="control-label" for="enal_tipo_documento">Tipo Documento </label>
                   <select class="form-control" id="enal_tipo_documento" data-placeholder="SELECCIONE" name="enal_tipo_documento"  tabindex="-1" required>
                     <option></option>
-                    <?php foreach ($arrAcabados as $val) {
+                    <?php foreach ($arrTdocumentos as $val) {
                             echo '<option value="'.$val['oid'].'">'.strtoupper($val['descripcion']).'</option>';
                     } ?>
                   </select>
@@ -49,15 +50,17 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('tipos_docu
                     </span>
                   </div>                  
                 </div>
-                <div class="form-group col-md-4 col-sm-4 col-xs-12">
+                <div class="form-group col-md-6 col-sm-6 col-xs-12">
                   <label class="control-label" for="tercero"><small>Proveedor</small> </label>
                   <input type="text" id="tercero" name="" class="form-control" placeholder="" readonly>
                 </div>
-                <div class="form-group col-md-2 col-sm-2 col-md-offset-2 col-xs-12">
+                <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="enal_tipo_movimiento">Tipo movimiento </label>
                   <select class="form-control" id="enal_tipo_movimiento" data-placeholder="SELECCIONE" name="enal_tipo_movimiento"  tabindex="-1" required>
                     <option></option>
-                    
+                    <?php foreach ($arrTmovimientos as $val) {
+                            echo '<option value="'.$val['oid'].'">'.strtoupper($val['descripcion']).'</option>';
+                    } ?>
                   </select>
                 </div>
               </div>
@@ -198,10 +201,7 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('tipos_docu
   <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
   <!-- DateJS -->
   <script src="../plugins/DateJS/build/date.js"></script>
-  <!-- JQVMap -->
-  <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-  <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-  <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+
 
   <!-- bootstrap-daterangepicker -->
   <script src="../plugins/moment/moment.min.js"></script>
@@ -249,14 +249,13 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('tipos_docu
 
     var $tablaitems;
     var globalArrOrdPro = [], esMedida = 0;
-    var arrConceptos = <?php echo json_encode($arrConceptos, false);  ?>;
-    var form = document.getElementById("formordenproduccion");
-
-
+    var form = document.getElementById("formnuevaentrada");
+    
     document.title = document.title+" Orden de producción"; //set Titulo de la pagina
-    var categoria = document.getElementById("categoria"); //Get selector categoria
-    var indentificacion = document.getElementById("prov_identificacion");
-    categoria.onchange = function() { setConcepto() }; //Evento al cambiar del selector de categoria.
+    
+    //var categoria = document.getElementById("categoria"); //Get selector categoria
+    var tercero = document.getElementById("enal_id_tercero");
+    //categoria.onchange = function() { setConcepto() }; //Evento al cambiar del selector de categoria.
     document.getElementById("btnadd").onclick = function(){ addItemTable() };
     form["btnclean"].onclick = function(){ window.location.reload(true); };
     document.getElementById("btnguardar").onclick = function(){ guardarOrden() };
@@ -283,13 +282,13 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('tipos_docu
     }
 
     // Función que realiza una busqueda por numero de indentificacion del proveedor y/o tercero.
-    indentificacion.onblur = function(){  
-      if (/^\s+/g.test(indentificacion.value) != true) { 
-        if (indentificacion.value != "") {
+    tercero.onblur = function(){  
+      if (/^\s+/g.test(tercero.value) != true) { 
+        if (tercero.value != "") {
           var xhr = new XMLHttpRequest();
           var formData = new FormData();
 
-          formData.append("prov_identificacion", indentificacion.value);
+          formData.append("prov_identificacion", tercero.value);
           formData.append("data", "consultarproveedor");
           
           xhr.open("POST", "../data/data.php",false);
@@ -298,15 +297,11 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('tipos_docu
           if (xhr.status == 200) {
             var result = JSON.parse(xhr.responseText);
             if (result["bool"] && result["data"] != false) {
-              
-              form["prov_nombre"].value = result["data"]["prov_nombre"];
-              form["pro_nombre_responsable"].value = result["data"]["prov_otrosdatos"];
-              //window.location.reload(true);
+              document.getElementById("tercero").value = result["data"]["prov_nombre"];
             }else{
               alert("Atención!\n\nNo existe ningun tercero con esa Identificación. Compruebe de nuevo.\nDe lo contrario registrelo.");
-              form["prov_nombre"].value = "";
-              form["pro_nombre_responsable"].value = "";
-              form["prov_identificacion"].value = "";
+              tercero.value = "";
+              document.getElementById("tercero").value = "";
             }
 
           } else {
@@ -315,7 +310,8 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('tipos_docu
         }
       }else{
         alert("Atención!\n\nEl Campo Identificación no es válido, compruebe de nuevo.");
-        indentificacion.value = "";
+        tercero.value = "";
+        document.getElementById("tercero").value = "";
       }
     };
 
