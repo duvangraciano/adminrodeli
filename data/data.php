@@ -244,6 +244,10 @@ if ( isset( $_POST['data'] ) ) {
 	if ($_POST['data'] == 'consultarcodigo') {
 		echo $misc->consularCodigo($_POST['com_codigo']);
 	}
+	
+	if ($_POST['data'] == 'get_materiaprima') {
+		echo json_encode($misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC));
+	}
 
 	if ($_POST['data'] == 'updatenuevoconcepto') {
 		echo $misc->updateNuevoConcepto($_POST);

@@ -76,41 +76,41 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
               <div class="row">
                 <div class="form-group col-md-4 col-sm-4 col-xs-12">
                   <label class="control-label" for="concepto">Producto/Concepto </label>
-                  <select class="form-control" id="concepto" name="" tabindex="-1">
+                  <select class="form-control" id="concepto" name="" tabindex="-1" title="Producto/Concepto">
                     <option></option>
                   </select>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="">Unidad Medida </label>
-                  <input type="text" id="unidad_medida" class="form-control" placeholder="Unidad Medida" disabled>
+                  <input type="text" id="unidad_medida" class="form-control" title="Unidad Medida" placeholder="Unidad Medida" readonly>
                 </div>              
                 <div class="form-group col-md-1 col-sm-1 col-xs-12">
                   <label class="control-label" for="">Cantidad </label>
-                  <input type="number" id="cantidad" min="1" name="" class="form-control" placeholder="Cantidad">
+                  <input type="number" id="cantidad" min="1" name="" class="form-control" title="Cantidad" placeholder="Cantidad">
                 </div>                
                 <div class="form-group col-md-1 col-sm-1 col-xs-12">
                   <label class="control-label" for="">Iva %</label>
-                  <input type="number" id="iva" min="1" name="" class="form-control" placeholder="Iva%">
+                  <input type="number" id="iva" min="1" name="" class="form-control" title="Iva %" placeholder="Iva%">
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="">Total Iva </label>
-                  <input type="number" id="total_iva" min="1" name="" class="form-control" placeholder="Total Iva">
+                  <input type="number" id="total_iva" min="1" name="" class="form-control" title="Total Iva" placeholder="Total Iva">
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="">Total Neto </label>
-                  <input type="number" id="total_neto" min="1" name="" class="form-control" placeholder="Total Neto">
+                  <input type="number" id="total_neto" min="1" name="" class="form-control" title="Total Neto" placeholder="Total Neto">
                 </div>
               </div>
-
+ 
               <div class="row">
                 <div class="form-group col-md-6 col-sm-6 col-xs-12">
-                  <input type="text" id="Observaciones" name="" class="form-control" placeholder="OBSERVACIONES">
+                  <input type="text" id="observaciones" name="" class="form-control" title="Observaciones" placeholder="OBSERVACIONES">
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <input type="number" id="costo_unitario" min="1" class="form-control" placeholder="Costo Unitario" disabled>
+                  <input type="number" id="costo_unitario" min="1" class="form-control" title="Costo Unitario" placeholder="Costo Unitario" disabled>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <input type="number" id="valor_total" min="1" class="form-control" placeholder="Valor Total" disabled>
+                  <input type="number" id="valor_total" min="1" class="form-control" title="Valor Total" placeholder="Valor Total" disabled>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <button id="btnadd" type="button" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Añadir</button>
@@ -125,10 +125,10 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
                         <tr>
                           <th><input type="checkbox" id="check-all" class="flat"></th>                          
                           <th>Codigo </th>
-                          <th style="width: 60%;">Items </th>
-                          <th>Dimensión </th>
+                          <th style="width: 60%;">Producto/Concepto </th>
                           <th>Cantidad </th>
-                          <th>Precio $ </th>
+                          <th>Precio </th>
+                          <th>Subtotal </th>
                         </tr>
                       </thead>
 
@@ -138,7 +138,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
                         <tr>
                           <td colspan="4"></td>
                           <td>SUBTOTAL:</td>
-                          <td>[Subtotal]</td>
+                          <td id="subtotal">[Subtotal]</td>
                         </tr>
                       </tfoot>
                     </table>
@@ -247,38 +247,37 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
 
   <script>
 
-    var $tablaitems;
-    var globalArrOrdPro = [], esMedida = 0;
+    var tablaitems, subtotal = 0;
+    var arrConcepto = [];
+    var arrItems = [], esMedida = 0;
     var form = document.getElementById("formnuevaentrada");
+    var tercero = document.getElementById("enal_id_tercero");
     
     document.title = document.title+" Orden de producción"; //set Titulo de la pagina
+    document.getElementById("total_iva").onchange = function(){ recalcularTotalItem(); };
+    document.getElementById("total_neto").onchange = function(){ recalcularTotalItem(); };
+    document.getElementById("cantidad").onchange = function(){ recalcularTotalItem(); };
+    $("#concepto").on("select2:open", function (e) { listar_conceptos(); });
+    $("#concepto").on("select2:select", function (e) { setUnidadMedida(e.params.data); });
     
-    //var categoria = document.getElementById("categoria"); //Get selector categoria
-    var tercero = document.getElementById("enal_id_tercero");
-    //categoria.onchange = function() { setConcepto() }; //Evento al cambiar del selector de categoria.
     document.getElementById("btnadd").onclick = function(){ addItemTable() };
     form["btnclean"].onclick = function(){ window.location.reload(true); };
     document.getElementById("btnguardar").onclick = function(){ guardarOrden() };
 
-    function setConcepto() { //Carga el selector de conceptos
+    function recalcularTotalItem(){
+      var total_iva = parseFloat(document.getElementById("total_iva").value);
+      var total_neto = parseFloat(document.getElementById("total_neto").value);
+      var cantidad = parseFloat(document.getElementById("cantidad").value);
       
-      var html = '<option></option>';
-      for (var i = 0; i < arrConceptos.length; i++) {
-        if (arrConceptos[i]["com_categoria"] == categoria.options[categoria.selectedIndex].value) {
-          html += '<option data-toggle="tooltip" title="'+arrConceptos[i]['com_descripcion']+'" value="'+arrConceptos[i]['oid']+'">'+arrConceptos[i]['com_codigo'].toUpperCase()+' - '+arrConceptos[i]['com_descripcion'].toUpperCase()+'</option>';          
-        }
-      }
-
-      document.getElementById("conceptos").innerHTML = html;
-      
+      document.getElementById("valor_total").value = (isNaN(total_iva) ?0:total_iva)+total_neto;
+      document.getElementById("costo_unitario").value = ( ((isNaN(total_iva) ?0:total_iva)+total_neto)/cantidad ).toFixed(2);
     }
 
-    function asociarItem() {
-      var op = '<option></option>';
-      for(var i in globalArrOrdPro){
-        op += '<option value="'+globalArrOrdPro[i]['oid']+'">'+globalArrOrdPro[i]['item']+'</option>'
-      }
-      document.getElementById("asociar_item").innerHTML = op;
+    function setUnidadMedida(value) {
+      var data = value;
+      var getData = arrConcepto.find(x => x.oid === data.id);
+      
+      document.getElementById("unidad_medida").value = getData["mate_tipomedida_oid"];
     }
 
     // Función que realiza una busqueda por numero de indentificacion del proveedor y/o tercero.
@@ -314,6 +313,30 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
         document.getElementById("tercero").value = "";
       }
     };
+    
+    function listar_conceptos(){
+      var xhr = new XMLHttpRequest();
+      var formData = new FormData();
+
+      formData.append("data", "get_materiaprima");
+      
+      xhr.open("POST", "../data/data.php",false);
+      xhr.send(formData);
+
+      if (xhr.status == 200) {
+        var result = JSON.parse(xhr.responseText);
+        
+        arrConcepto = result;
+        var op = '<option></option>';
+        for(var i in result){
+          op += '<option value="'+result[i]['oid']+'">'+result[i]['mate_referencia']+' - '+result[i]['mate_descripcion'].toUpperCase()+'</option>'
+        }
+        document.getElementById("concepto").innerHTML = op;
+
+      } else {
+        alert('No se enviaron datos!');
+      }
+    }
 
     function clearField(excluir, form){
       var arrElementos = document.getElementById(form);
@@ -325,37 +348,50 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
       }      
     }
 
-    function limpiarCampos(){
-      form["cantidad"].value = 1;
-      form["ancho"].value = "";
-      form["alto"].value = "";
-      $("#categoria").select2().val(null).trigger('change.select2');
+    function limpiarCampos(arrValues){
+      for(var i in arrValues){
+        if(arrValues[i].tagName == "SELECT"){
+          $("#"+arrValues[i].id).select2().val(null).trigger('change.select2');
+        }else if(arrValues[i].tagName == "INPUT"){
+          document.getElementById(arrValues[i].id).value = "";
+        }
+      }
     }
 
     function addItemTable(){
       
-      var categoria =  document.getElementById("categoria");
-      var concepto = document.getElementById("conceptos");
-      var asociar = document.getElementById("asociar_item");
-      var descuento = document.getElementById("descuento_item");
-      var precio = document.getElementById("precio_item");
-      var item = (concepto.value != '' ? concepto.options[concepto.selectedIndex].text : null);
-      var oid = (concepto.value != '' ? concepto.options[concepto.selectedIndex].value : null);
-      var codigo = (concepto.value != '' ? item.split("-") : []);
-      var cantidad = form["cantidad"].value;
-      var ancho = (form["ancho"].value == "" ? null : form["ancho"].value );
-      var alto = (form["alto"].value == "" ? null : form["alto"].value );
-      var observacion = form["observacion"].value;
+      var concepto =  document.getElementById("concepto");
+      var unidad_medida = document.getElementById("unidad_medida");
+      var cantidad = document.getElementById("cantidad");
+      var iva = document.getElementById("iva");
+      var total_iva = document.getElementById("total_iva");
+      var total_neto = document.getElementById("total_neto");
+      var valor_total = document.getElementById("valor_total");
+      var costo_unitario = document.getElementById("costo_unitario");
+      var observaciones = document.getElementById("observaciones");
+      var textConcepto = (concepto.value != '' ? concepto.options[concepto.selectedIndex].text.split("-") : []);
+      var valConcepto = (concepto.value != '' ? concepto.options[concepto.selectedIndex].value : null);
 
-      if ( validarItem(categoria, concepto, cantidad, ancho, alto) ) {
+      if ( validarItem([concepto, cantidad, total_neto, valor_total, costo_unitario]) ) {
       
-        globalArrOrdPro.push({oid:oid, cantidad:cantidad, codigo:codigo[0], item:codigo[1], ancho:ancho, alto:alto, observacion:observacion, asociar:asociar.value, descuento:descuento.value, precio:precio.value, categoria:categoria.value});
+        arrItems.push({
+                    oid:valConcepto,
+                    codigo:textConcepto[0],
+                    concepto:textConcepto[1],
+                    umedida:unidad_medida.value,
+                    cantidad:(cantidad.value == ""?0:parseFloat(cantidad.value)),
+                    iva:(iva.value == ""?0:parseFloat(iva.value)),
+                    totaliva:(total_iva.value == ""?0:parseFloat(total_iva.value)),
+                    totalneto:(total_neto.value == ""?0:parseFloat(total_neto.value)),
+                    costounitario:(costo_unitario.value == ""?0:parseFloat(costo_unitario.value)),
+                    valortotal:(valor_total.value == ""?0:parseFloat(valor_total.value)),
+                    observaciones:observaciones.value,
+                  });
 
-        calularCostos();
+        //calularCostos();
         funcionListarTabla();
-        
 
-        limpiarCampos(excluirCampos = ["prov_identificacion","prov_nombre","pro_nombre_responsable"],"formordenproduccion");
+        limpiarCampos([concepto,unidad_medida,cantidad,iva,total_iva,total_neto,valor_total,costo_unitario,observaciones]);
       }
 
     }
@@ -403,74 +439,37 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
 
       var html = '';
 
-        for (var i = 0; i < globalArrOrdPro.length; i++) {
-   
+        for (var i = 0; i < arrItems.length; i++) {
+          var observaciones = (arrItems[i]['observaciones'] == ""? "":"<code>"+arrItems[i]['observaciones']+"</code>");
           html += '<tr class="even pointer">';
           html += '<td class="a-center "><input type="checkbox" class="flat" name="table_records"></td>';          
-          html += '<td class=" ">'+globalArrOrdPro[i]['codigo']+'</td>';
-          html += '<td class=" ">'+globalArrOrdPro[i]['item']+' <small><code>'+globalArrOrdPro[i]['observacion']+'</code></small></td>';
-          html += '<td class=" ">'+globalArrOrdPro[i]['ancho']+':'+globalArrOrdPro[i]['alto']+'</td>';
-          html += '<td class="a-right a-right ">'+globalArrOrdPro[i]['cantidad']+'</td>';
-          html += '<td class="a-right a-right ">'+globalArrOrdPro[i]['precio']+'</td>';
+          html += '<td class=" ">'+arrItems[i]['codigo']+'</td>';
+          html += '<td class=" ">'+arrItems[i]['concepto']+' <small>'+observaciones+'</small></td>';
+          html += '<td class=" ">'+arrItems[i]['cantidad']+'</td>';
+          html += '<td class="a-right a-right ">'+arrItems[i]['costounitario']+'</td>';
+          html += '<td class="a-right a-right ">'+arrItems[i]['valortotal']+'</td>';
           html += '</tr>';
+          
+          subtotal = arrItems[i]['valortotal']+subtotal;
           
         }
           document.getElementById("tbody").innerHTML = html;
-          asociarItem();
+          document.getElementById("subtotal").innerHTML = subtotal;
+          //asociarItem();
     }
 
-    function calularCostos() {
-      var formData = new FormData();
-      
-      formData.append("com_categoria", globalArrOrdPro['categoria']);
-      formData.append("com_codigo", globalArrOrdPro['codigo']);
-      formData.append("globalArrCompo", JSON.stringify(globalArrOrdPro));
-      formData.append("data", "calcularcostos");
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", "../data/data.php",false);
-      xhr.send(formData);
-
-      if (xhr.status == 200) {
-        console.log(xhr.responseText);
-        //form["precio_1"].value = xhr.responseText;
-        /*
-        var result = JSON.parse(xhr.responseText);
-        if (result["bool"]) {
-          alert(result["mensaje"]);
-          //window.location.reload(true);
-        }else{
-          alert(result["mensaje"]);
+    
+    function validarItem(arrValues) {
+      var bool = true;
+      for(var i in arrValues){
+        if(arrValues[i].value == ""){
+          bool = false;
+          alert("El campo ["+arrValues[i].title+"] es obligatorio y no puede estar vacio.");
+          break;
         }
-        */
-      } else {
-        alert('No se enviaron datos!');
       }
-    }
-
-    function validarItem(categoria, concepto, cantidad, ancho, alto) {
-          
-      if (categoria.value != "" && concepto.value != "" && cantidad.value != "") {
-        for (var i = 0; i < arrConceptos.length; i++) {
-          if (parseInt(arrConceptos[i]["oid"]) == parseInt(concepto.value)) {
-            
-            if (arrConceptos[i]["com_esmedible"] == 1) {
-              if (ancho.value != '' && alto.value != "") {
-                return true;
-              }else{
-                alert("Los campos Ancho y Alto son obligatorios!");
-                return false;
-              }
-            }else{
-              return true;
-            }
-                  
-          }
-        }
-      }else{
-        alert("Mensaje de validación!");
-        return false;
-      }
+      console.log(bool);
+      return bool;
     }
 
     function removeritem(){
