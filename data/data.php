@@ -236,6 +236,16 @@ if ( isset( $_POST['data'] ) ) {
 	if ($_POST['data'] == 'consultarproveedor') {
 		echo $misc->consultarTercero($_POST['prov_identificacion']);
 	}
+	
+	if ($_POST['data'] == 'consultarrol') {
+		$get_all = $misc->get_one('tbl_roles',NULL,'oid',$_POST['oid']);
+		$_getrol = ($get_all['bool']?$get_all['data']:array());
+		if ( $get_all['bool'] ) {
+			echo '{"roles":'.json_encode($_getrol).',"modulos":'.json_encode(unserialize($_getrol['rol_modulos'])).',"bool":true}';
+		}else{
+			echo '{"mensaje":"No se encontró una coincidencia","bool":false}';
+		}
+	}
 
 	if ($_POST['data'] == 'guardarcompuesto') {
 		echo $misc->guardarCompuesto($_POST,$_FILES['com_imagen']);
@@ -273,6 +283,11 @@ if ( isset( $_POST['data'] ) ) {
 		//$json = json_encode($_POST, true);
 		
 		echo $misc->guardarEmpleado($_POST);
+	}
+	
+	if ($_POST['data'] == 'guardarrol') {
+		$_post = array_slice($_POST, 0, -1);
+		echo $misc->guardarRol($_post);
 	}
 
 	if ($_POST['data'] == 'guardarnuevoconcepto') {

@@ -1,5 +1,13 @@
 <?php 
-session_start(); 
+session_start();
+
+if (isset($_SESSION['login']) && $_SESSION['loggedin'] == true) {
+
+$cfg = $_SESSION['cfg'];
+$empresa = unserialize($cfg['data']['conf_empresa']);
+$app = unserialize($cfg['data']['conf_app']);
+$user = $_SESSION['login'];
+
 setlocale(LC_MONETARY, 'es_CO');
 
 include_once '../class/class.miscelanea.php';
@@ -9,7 +17,9 @@ $db = new Database();
 $con = $db->conexion();
 $misc = new Miscelanea($con);
 
-
+  if(isset($_GET['logout']) && $_GET['logout'] == 'logout'){
+    $misc->logout();
+  }
 
 ?>
 <!DOCTYPE html>
@@ -21,7 +31,7 @@ $misc = new Miscelanea($con);
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title><?php echo 'RodeliSystem | ' ?></title>
+    <title><?php echo $app['nombre_app'].' | '.$empresa['nombre_empresa']; ?></title>
 
     <!-- Bootstrap -->
     <link href="../plugins/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -72,7 +82,7 @@ $misc = new Miscelanea($con);
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="index.php" class="site_title"><i class="fa fa-crop"></i> <span>RodeliSystem</span></a>
+              <a href="index.php" class="site_title"><i class="fa fa-crop"></i> <span><?php echo $app['nombre_app']; ?></span></a>
             </div>
 
             <div class="clearfix"></div>
@@ -84,7 +94,7 @@ $misc = new Miscelanea($con);
               </div>
               <div class="profile_info">
                 <span>Bienvenido,</span>
-                <h2>Usuario</h2>
+                <h2><?php echo $user['usu_id']; ?></h2>
               </div>
             </div>
             <!-- /menu profile quick info -->
@@ -122,6 +132,18 @@ $misc = new Miscelanea($con);
           <?php 
           $sub = (isset($_GET['sub'])? $_GET['sub'] : '');
           switch ($sub) {
+            case 'roles':
+              include_once '../pages/roles.php' ;
+              break;
+            
+            case 'nuevorol':
+              include_once '../pages/nuevorol.php' ;
+              break;
+              
+            case 'usuarios':
+              include_once '../pages/usuarios.php' ;
+              break;
+              
             case 'plantilla':
               include_once '../pages/plantilla.php' ;
               break;
@@ -220,3 +242,9 @@ $misc = new Miscelanea($con);
 
   </script>
 </html>
+
+<?php
+}else{
+  header('Location: ../index.php');
+}
+?>

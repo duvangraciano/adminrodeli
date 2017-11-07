@@ -80,6 +80,15 @@ $sub = (isset($_GET['sub'])? $_GET['sub'] : '');
           -->
           </ul>
         </li>
+        <li><a><i class="fa fa-cogs"></i> Sistema <span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+          
+            <li><a href="?mod=sistema&sub=usuarios">Usuarios</a></li>
+            <li><a href="?mod=sistema&sub=roles">Roles</a></li>
+          <!--  <li><a href="fixed_footer.html">Fixed Footer</a></li>
+          -->
+          </ul>
+        </li>
       </ul>
     </div>
 <!--

@@ -302,6 +302,26 @@ class Miscelanea
 		}
 
 	}
+	
+	function guardarRol($post)
+	{
+		$nombre_rol = htmlspecialchars($post['nombre_rol']);
+		$descripcion_rol = htmlspecialchars($post['descripcion_rol']);
+		$modulos_rol = serialize(array_slice($post, 2));
+		$slug_rol = preg_replace('/\s+/', '_', strtolower(trim($post['nombre_rol'])));
+
+		$query = "INSERT INTO `tbl_roles` (rol_nombre,rol_descripcion,rol_slug,rol_modulos) VALUES ('".$nombre_rol."','".$descripcion_rol."','".$slug_rol."','".$modulos_rol."')";
+
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return '{"mensaje":"Se produjo un error: '.$err[2].'","bool":false}';
+		}else{
+			return '{"mensaje":"Se completó la operación","bool":true}';
+		}
+
+	}
 
 	function guardarCompuesto($arrPost,$files)
 	{
@@ -434,6 +454,67 @@ class Miscelanea
 			return NULL;
 		}
 
+	}
+	
+	function get_one($table=null,$var=null, $key=null, $value=null,$order=null){
+		
+		$where = (is_null($key) && is_null($value)?'':"WHERE `".$key."` = '".$value."' ");
+		$query = "SELECT ".(is_null($var)? '*':$var)." FROM `".$table."` ".$where.(is_null($order)?'':'ORDER BY `'.$order.'` ASC')." ; ";
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+		}else{
+			return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->fetch(PDO::FETCH_ASSOC),'query'=>$query);
+		}
+		
+	}
+	
+	function get_all($table=null,$var=null, $key=null, $value=null,$order=null){
+		
+		$where = (is_null($key) && is_null($value)?'':"WHERE `".$key."` = '".$value."' ");
+		$query = "SELECT ".(is_null($var)? '*':$var)." FROM `".$table."` ".$where.(is_null($order)?'':'ORDER BY `'.$order.'` ASC')." ; ";
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+		}else{
+			return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->fetchAll(PDO::FETCH_ASSOC),'query'=>$query);
+		}
+		
+	}
+	
+	function login($user,$pass){
+		
+		$query = "SELECT * FROM `tbl_usuarios` WHERE `usu_id`= '".$user."' ";
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2]);
+		}else{
+			$rs = $result->fetch(PDO::FETCH_ASSOC);
+			if($result->rowCount()>0 && $rs['usu_pass'] == $pass){
+				//Definir sessiones de inicio.
+				session_start();
+				session_status(PHP_SESSION_ACTIVE);
+				$_SESSION['login'] = $rs;
+				return array('bool'=>true,'mensaje'=>'Autenticación satisfactoria!');	
+			}else{
+				return array('bool'=>false,'mensaje'=>'<b>Error de Autenticación!</b></br> Puede que el usuario y la contraseña no sean correctos.');
+			}
+		}
+		
+	}
+	
+	function logout(){
+		session_unset();
+		session_destroy();
+		session_start();
+		session_regenerate_id(true);
+		header('Location: ../index.php');
 	}
 
 }
