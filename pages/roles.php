@@ -1,5 +1,8 @@
 <?php
 
+if (session_status() != PHP_SESSION_NONE) {
+if (isset($pu['ver_roles'])) {
+
 $get_all = $misc->get_all('tbl_roles');
 $_rol = ($get_all['bool']?$get_all['data']:array());
 
@@ -47,6 +50,7 @@ $_rol = ($get_all['bool']?$get_all['data']:array());
                       ?>
                     </tbody>
                   </table>
+                  
                 </div>
               </div>
             </div>
@@ -66,6 +70,81 @@ $_rol = ($get_all['bool']?$get_all['data']:array());
       </div>
     </div>
   <div id="reloadscript"></div>
+  
+
+  <script>
+
+    document.title = document.title+" Roles de usuarios"; //set Titulo de la pagina
+
+
+
+    $(document).ready(function() {
+
+      //var t = $('#tablaitems').dataTable();
+
+      $tablaitems = $('#tablaordenesproduccion');
+
+      $tablaitems.dataTable({
+        responsive: true,
+        ordering: false,
+        dom: '<"toolbar">frtip'
+      });
+      
+
+      $("div.toolbar").html('');
+
+    });
+  </script>
+  <!-- /bootstrap-daterangepicker -->
+
+
+  <!-- Select2 -->
+  <script>
+    $(document).ready(function() {
+      $("#categoria").select2({
+        placeholder: "SELECCIONE LA CATEGORÍA",
+        allowClear: false
+      });
+
+      $("#conceptos").select2({
+        placeholder: "SELECCIONE UN CONCEPTO",
+        allowClear: true
+      });
+
+      $(".tipocargo").select2({
+        placeholder: "SELECCIONE EL GRUPO",
+        allowClear: true
+      });
+
+      $(".select2_group").select2({});
+      $(".select2_multiple").select2({
+        maximumSelectionLength: 4,
+        placeholder: "With Max Selection limit 4",
+        allowClear: true
+      });
+    });
+  </script>
+  <!-- /Select2 -->
+
+
+  <!-- Autosize -->
+  <script>
+    $(document).ready(function() {
+      autosize($('.resizable_textarea'));
+    });
+  </script>
+  <!-- /Autosize -->
+
+<?php 
+}else{
+  $html_negate =  '<div style="padding: 100px 0px 50px 0px;" class="right_col" role="main">';
+  $html_negate .= '<center><h1><i class="fa fa-warning"></i>Usted no tiene permisos para ver esta sessión!</h1></center></div>';
+  echo $html_negate;
+}
+}
+
+?>
+
   <!-- jQuery -->
   <script src="../plugins/jquery/dist/jquery.min.js"></script>
   <!-- Bootstrap -->
@@ -142,69 +221,3 @@ $_rol = ($get_all['bool']?$get_all['data']:array());
   <script src="../plugins/jszip/dist/jszip.min.js"></script>
   <script src="../plugins/pdfmake/build/pdfmake.min.js"></script>
   <script src="../plugins/pdfmake/build/vfs_fonts.js"></script>
-
-  <script>
-
-    document.title = document.title+" Roles de usuarios"; //set Titulo de la pagina
-
-
-
-    $(document).ready(function() {
-
-      //var t = $('#tablaitems').dataTable();
-
-      $tablaitems = $('#tablaordenesproduccion');
-
-      $tablaitems.dataTable({
-        responsive: true,
-        ordering: false,
-        dom: '<"toolbar">frtip'
-      });
-      
-
-      $("div.toolbar").html('');
-
-    });
-  </script>
-  <!-- /bootstrap-daterangepicker -->
-
-
-  <!-- Select2 -->
-  <script>
-    $(document).ready(function() {
-      $("#categoria").select2({
-        placeholder: "SELECCIONE LA CATEGORÍA",
-        allowClear: false
-      });
-
-      $("#conceptos").select2({
-        placeholder: "SELECCIONE UN CONCEPTO",
-        allowClear: true
-      });
-
-      $(".tipocargo").select2({
-        placeholder: "SELECCIONE EL GRUPO",
-        allowClear: true
-      });
-
-      $(".select2_group").select2({});
-      $(".select2_multiple").select2({
-        maximumSelectionLength: 4,
-        placeholder: "With Max Selection limit 4",
-        allowClear: true
-      });
-    });
-  </script>
-  <!-- /Select2 -->
-
-
-  <!-- Autosize -->
-  <script>
-    $(document).ready(function() {
-      autosize($('.resizable_textarea'));
-    });
-  </script>
-  <!-- /Autosize -->
-
-
-

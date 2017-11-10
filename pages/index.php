@@ -8,16 +8,19 @@ $empresa = unserialize($cfg['data']['conf_empresa']);
 $app = unserialize($cfg['data']['conf_app']);
 $user = $_SESSION['login'];
 
-setlocale(LC_MONETARY, 'es_CO');
 
+setlocale(LC_MONETARY, 'es_CO');
+date_default_timezone_set('America/Bogota');
 include_once '../class/class.miscelanea.php';
 include_once '../class/class.database.php';
 
 $db = new Database();
 $con = $db->conexion();
 $misc = new Miscelanea($con);
+$pu = unserialize($misc->get_one('tbl_roles','rol_modulos','oid',$user['usu_rol_id'])['data']['rol_modulos']);
 
   if(isset($_GET['logout']) && $_GET['logout'] == 'logout'){
+    $misc->setSession($user['oid']);
     $misc->logout();
   }
 

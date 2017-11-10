@@ -303,6 +303,24 @@ class Miscelanea
 
 	}
 	
+
+	function actualizaRol($post)
+	{
+		$oid = $post['oid'];
+		$roles = serialize(array_slice($post, 0, -2));
+		
+		$query = "UPDATE `tbl_roles` SET `rol_modulos` = '".$roles."' WHERE `oid` ='".$oid."' ";
+
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return '{"mensaje":"Se produjo un error: '.$err[2].'","bool":false}';
+		}else{
+			return '{"mensaje":"Se completó la operación","bool":true}';
+		}
+	}
+	
 	function guardarRol($post)
 	{
 		$nombre_rol = htmlspecialchars($post['nombre_rol']);
@@ -311,6 +329,22 @@ class Miscelanea
 		$slug_rol = preg_replace('/\s+/', '_', strtolower(trim($post['nombre_rol'])));
 
 		$query = "INSERT INTO `tbl_roles` (rol_nombre,rol_descripcion,rol_slug,rol_modulos) VALUES ('".$nombre_rol."','".$descripcion_rol."','".$slug_rol."','".$modulos_rol."')";
+
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return '{"mensaje":"Se produjo un error: '.$err[2].'","bool":false}';
+		}else{
+			return '{"mensaje":"Se completó la operación","bool":true}';
+		}
+
+	}
+	
+	function setSession($u_oid)
+	{
+
+		$query = "INSERT INTO `tbl_sesiones` (ses_usuario_oid) VALUES ('".$u_oid."')";
 
 		$result = $this->conn->prepare( $query );
 
@@ -510,6 +544,7 @@ class Miscelanea
 	}
 	
 	function logout(){
+		
 		session_unset();
 		session_destroy();
 		session_start();

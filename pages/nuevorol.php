@@ -1,6 +1,7 @@
 <?php
 
 if (session_status() != PHP_SESSION_NONE) {
+if (isset($pu['agregar_editar_roles'])) {
 $get_all = $misc->get_all('tbl_modulos',NULL,'mod_heredable','0');
 $_mod = ($get_all['bool']?$get_all['data']:array());
 
@@ -72,7 +73,7 @@ $_mod = ($get_all['bool']?$get_all['data']:array());
               <div class="row">
                 <div class="form-group col-md-12 col-sm-12 col-xs-12">
                   <button id="btnguardar" type="button" class="btn btn-success pull-right"><i class="fa fa-save"></i> Guardar</button>
-                  <button id="btnclean" type="button" class="btn btn-default pull-right"><i class="fa fa-eraser"></i> Limpiar</button>
+                  <button id="btnclean" type="button" class="btn btn-default pull-right"><i class="fa fa-times"></i> Cancelar</button>
 
                 </div>
               </div>
@@ -92,6 +93,192 @@ $_mod = ($get_all['bool']?$get_all['data']:array());
 <!-- /footer content -->
 
   <div id="reloadscript"></div>
+
+
+  <script>
+    var form = document.getElementById("formroles");
+    var url = '?mod=sistema&sub=roles';
+    var get_oid;
+    form["btnguardar"].onclick = function(){ guardar(); }
+    form["btnclean"].onclick = function() { window.location.href = url; };
+    window.onload = function(){ load_data(); }
+    
+    function validarItem(arrValues) {
+      var bool = true;
+      for(var i in arrValues){
+        if(arrValues[i].value == ""){
+          bool = false;
+          alert("El campo ["+arrValues[i].title+"] es obligatorio y no puede estar vacio.");
+          break;
+        }
+      }
+      console.log(bool);
+      return bool;
+    }
+
+    function actualizar(){
+      
+      if ( /^\s+$/.test(form["nombre_rol"].value) == false && form["nombre_rol"].value !== "" ) {
+
+        var formData = new FormData(form);     
+        formData.append("data", "actualizarrol");
+        formData.append("oid", get_oid);
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "../data/data.php",false);
+        xhr.send(formData);
+        
+        if (xhr.status == 200) {
+          
+          var result = JSON.parse(xhr.responseText);
+          if (result["bool"]) {
+            notify('Mensaje!','La operación fue realizada satisfactoriamente.','success');
+          }else{
+            notify('Error!',result["mensaje"],'error');
+          }
+          
+        } else {
+          notify('Error!','No se enviaron datos!','error');
+        }
+      
+      }else{
+        alert("El campo ["+form["nombre_rol"].title+"] es obligatorio y no puede estar vacio.");
+      }
+    }
+    
+    function guardar(){
+      
+      if ( /^\s+$/.test(form["nombre_rol"].value) == false && form["nombre_rol"].value !== "" ) {
+
+        var formData = new FormData(form);     
+        formData.append("data", "guardarrol");
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "../data/data.php",false);
+        xhr.send(formData);
+        
+        if (xhr.status == 200) {
+          
+          var result = JSON.parse(xhr.responseText);
+          if (result["bool"]) {
+            notify('Mensaje!','La operación fue realizada satisfactoriamente.','success');
+            window.location.href = url;
+          }else{
+            notify('Error!',result["mensaje"],'error');
+          }
+          
+        } else {
+          notify('Error!','No se enviaron datos!','error');
+        }
+      
+      }else{
+        alert("El campo ["+form["nombre_rol"].title+"] es obligatorio y no puede estar vacio.");
+      }
+    }
+    
+    function consultar(oid){
+
+        var formData = new FormData(form);     
+        formData.append("data", "consultarrol");
+        formData.append("oid", oid);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "../data/data.php",false);
+        xhr.send(formData);
+        
+        if (xhr.status == 200) {
+          
+          var result = JSON.parse(xhr.responseText);
+          return result;
+          
+        } else {
+          return {bool:false};
+          notify('Error!','No se enviaron datos!','error');
+        }
+      
+    }
+    
+    function load_data(){
+      var url_string = window.location.href;
+      var url = new URL(url_string);
+      var _get = url.searchParams.get("id");
+           
+      if (_get !== "") {
+        var data = consultar(_get);
+        if(data["bool"] && data["roles"] != ""){
+          get_oid = _get;
+          form["btnguardar"].setAttribute("onclick","actualizar()");
+          form["btnguardar"].removeAttribute("id");
+          form["nombre_rol"].value = data["roles"]["rol_nombre"];
+          form["nombre_rol"].setAttribute("disabled","disabled");
+          form["descripcion_rol"].value = data["roles"]["rol_descripcion"];
+          form["descripcion_rol"].setAttribute("disabled","disabled");
+          
+          for(var i in data["modulos"]){
+            $("#"+i).iCheck("check");
+            form[i].checked = true;
+          }
+          
+        }
+      }
+    }
+    
+    function notify(titulo,texto,tipo) {
+      new PNotify({
+          title: titulo,
+          text: texto,
+          type: tipo, // warning, success, error, info
+          styling: 'bootstrap3'
+      });
+    }
+  </script>
+
+  <!-- Select2 -->
+  <script>
+    $(document).ready(function() {
+      $("#prov_ciudad").select2({
+        placeholder: "SELECCIONE LA CIUDAD",
+        allowClear: false
+      });
+
+      $("#prov_tipoid").select2({
+        placeholder: "TIPO ID",
+        allowClear: false
+      });
+
+      $("#prov_naturaleza").select2({
+        placeholder: "TIPO DE NATURALEZA",
+        allowClear: true
+      });
+
+      $(".select2_group").select2({});
+      $(".select2_multiple").select2({
+        maximumSelectionLength: 4,
+        placeholder: "With Max Selection limit 4",
+        allowClear: true
+      });
+    });
+  </script>
+  <!-- /Select2 -->
+
+
+  <!-- Autosize -->
+  <script>
+    $(document).ready(function() {
+      autosize($('.resizable_textarea'));
+    });
+  </script>
+  <!-- /Autosize -->
+<?php 
+}else{
+  $html_negate =  '<div style="padding: 100px 0px 50px 0px;" class="right_col" role="main">';
+  $html_negate .= '<center><h1><i class="fa fa-warning"></i>Usted no tiene permisos para ver esta sessión!</h1></center></div>';
+  echo $html_negate;
+}
+}
+
+?>
+
   <!-- jQuery -->
   <script src="../plugins/jquery/dist/jquery.min.js"></script>
   <!-- Bootstrap -->
@@ -166,149 +353,3 @@ $_mod = ($get_all['bool']?$get_all['data']:array());
   <script src="../plugins/jszip/dist/jszip.min.js"></script>
   <script src="../plugins/pdfmake/build/pdfmake.min.js"></script>
   <script src="../plugins/pdfmake/build/vfs_fonts.js"></script>
-
-  <script>
-    var form = document.getElementById("formroles");
-    form["btnguardar"].onclick = function(){ guardar(); }
-    window.onload = function(){ load_data(); }
-    
-    function validarItem(arrValues) {
-      var bool = true;
-      for(var i in arrValues){
-        if(arrValues[i].value == ""){
-          bool = false;
-          alert("El campo ["+arrValues[i].title+"] es obligatorio y no puede estar vacio.");
-          break;
-        }
-      }
-      console.log(bool);
-      return bool;
-    }
-    
-    function guardar(){
-      
-      if ( /^\s+$/.test(form["nombre_rol"].value) == false && form["nombre_rol"].value !== "" ) {
-
-        var formData = new FormData(form);     
-        formData.append("data", "guardarrol");
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "../data/data.php",false);
-        xhr.send(formData);
-        
-        if (xhr.status == 200) {
-          
-          var result = JSON.parse(xhr.responseText);
-          if (result["bool"]) {
-            //alert(result["mensaje"]);
-            notify('Mensaje!','La operación fue realizada satisfactoriamente.','success');
-            //window.location.reload(true);
-          }else{
-            //alert(result["mensaje"]);
-            notify('Error!',result["mensaje"],'error');
-          }
-          
-        } else {
-          //alert('No se enviaron datos!');
-          notify('Error!','No se enviaron datos!','error');
-        }
-      
-      }else{
-        alert("El campo ["+form["nombre_rol"].title+"] es obligatorio y no puede estar vacio.");
-      }
-    }
-    
-    function consultar(oid){
-
-        var formData = new FormData(form);     
-        formData.append("data", "consultarrol");
-        formData.append("oid", oid);
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "../data/data.php",false);
-        xhr.send(formData);
-        
-        if (xhr.status == 200) {
-          
-          var result = JSON.parse(xhr.responseText);
-          return result;
-          
-        } else {
-          return {bool:false};
-          notify('Error!','No se enviaron datos!','error');
-        }
-      
-    }
-    
-    function load_data(){
-      var url_string = window.location.href;
-      var url = new URL(url_string);
-      var _get = url.searchParams.get("id");
-      console.log(_get);
-      if (_get !== "") {
-        var data = consultar(_get);
-        if(data["bool"]){
-          form["nombre_rol"].value = data["roles"]["rol_nombre"];
-          form["nombre_rol"].setAttribute("disabled","disabled");
-          form["descripcion_rol"].value = data["roles"]["rol_descripcion"];
-          form["descripcion_rol"].setAttribute("disabled","disabled");
-          for(var i in data["modulos"]){
-            $("#"+i).iCheck("check");
-            form[i].checked = true;
-          }
-          
-        }
-      }
-    }
-    
-    function notify(titulo,texto,tipo) {
-      new PNotify({
-          title: titulo,
-          text: texto,
-          type: tipo, // warning, success, error, info
-          styling: 'bootstrap3'
-      });
-    }
-  </script>
-
-  <!-- Select2 -->
-  <script>
-    $(document).ready(function() {
-      $("#prov_ciudad").select2({
-        placeholder: "SELECCIONE LA CIUDAD",
-        allowClear: false
-      });
-
-      $("#prov_tipoid").select2({
-        placeholder: "TIPO ID",
-        allowClear: false
-      });
-
-      $("#prov_naturaleza").select2({
-        placeholder: "TIPO DE NATURALEZA",
-        allowClear: true
-      });
-
-      $(".select2_group").select2({});
-      $(".select2_multiple").select2({
-        maximumSelectionLength: 4,
-        placeholder: "With Max Selection limit 4",
-        allowClear: true
-      });
-    });
-  </script>
-  <!-- /Select2 -->
-
-
-  <!-- Autosize -->
-  <script>
-    $(document).ready(function() {
-      autosize($('.resizable_textarea'));
-    });
-  </script>
-  <!-- /Autosize -->
-<?php 
-
-}
-
-?>

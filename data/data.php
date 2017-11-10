@@ -246,6 +246,10 @@ if ( isset( $_POST['data'] ) ) {
 			echo '{"mensaje":"No se encontró una coincidencia","bool":false}';
 		}
 	}
+	
+	if ($_POST['data'] == 'actualizarrol') {
+		echo $misc->actualizaRol($_POST);
+	}
 
 	if ($_POST['data'] == 'guardarcompuesto') {
 		echo $misc->guardarCompuesto($_POST,$_FILES['com_imagen']);

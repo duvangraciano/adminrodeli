@@ -1,5 +1,9 @@
 <?php
 
+
+$get_all = $misc->get_all('tbl_usuarios');
+$_usu = ($get_all['bool']?$get_all['data']:array());
+
 ?>
 	<div class="right_col" role="main">
 
@@ -33,17 +37,16 @@
 
                     <tbody id="tbody">
                       <?php  
-                        $proveedores = array(0=>array('usuarioid'=>'71241332','identificacion'=>'71241332','nombres'=>'DUVAN ANDRES','apellidos'=>'GRACIANO','rol'=>'Administrador','session'=>'Hace 2 horas'));
-                        foreach ($proveedores as $value) {
+                        foreach ($_usu as $value) {
                           echo '
                                   <tr class="even pointer">
                                     <td class="a-center "><input type="checkbox" class="flat" name="table_records"></td>
-                                    <td>'.$value['usuarioid'].'</td>
-                                    <td>'.$value['identificacion'].'</td>
-                                    <td>'.$value['nombres'].'</td>
-                                    <td>'.$value['apellidos'].'</td>
-                                    <td>'.$value['rol'].'</td>
-                                    <td>'.$value['session'].'</td>
+                                    <td>'.$value['usu_id'].'</td>
+                                    <td>'.$value['usu_identificacion'].'</td>
+                                    <td>'.$value['usu_nombres'].'</td>
+                                    <td>'.$value['usu_apellidos'].'</td>
+                                    <td>'.$misc->get_one('tbl_roles',null,'oid',$value['usu_rol_id'])['data']['rol_nombre'].'</td>
+                                    <td>'.$misc->get_one('tbl_sesiones',null,'ses_usuario_oid',$value['oid'])['data']['ses_date_sesion'].'</td>
                                     <td><div class="btn-group">
                                           <button type="button" class="btn btn-info btn-xs">Editar</button>
                                           <button type="button" class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
