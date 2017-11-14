@@ -1,5 +1,7 @@
 <?php
 
+if (session_status() != PHP_SESSION_NONE) {
+if (isset($pu['ver_usuarios'])) {
 
 $get_all = $misc->get_all('tbl_usuarios');
 $_usu = ($get_all['bool']?$get_all['data']:array());
@@ -13,7 +15,7 @@ $_usu = ($get_all['bool']?$get_all['data']:array());
         <div class="x_panel">
           <div class="x_title">
             <h2>Usuarios <small>Vista previa</small></h2>
-            <a href="?" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Nuevo</a> 
+            <a href="?mod=sistema&sub=nuevousuario" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Nuevo</a> 
             <!-- <button onclick="" type="button" class="btn btn-success pull-right"><i class="fa fa-check-circle"></i> Boton</button> -->
             <div class="clearfix"></div>
           </div>
@@ -21,7 +23,7 @@ $_usu = ($get_all['bool']?$get_all['data']:array());
             <div class="row">
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="table-responsive">
-                  <table id="tablaordenesproduccion" class="table table-striped table-bordered bulk_action">
+                  <table id="tablausuarios" class="table table-striped table-bordered bulk_action">
                     <thead>
                       <tr>
                         <th><input type="checkbox" id="check-all" class="flat"></th>
@@ -31,13 +33,16 @@ $_usu = ($get_all['bool']?$get_all['data']:array());
                         <th>Apellidos </th>
                         <th>Rol</th>
                         <th>Última_Sesión</th>
+                        <th>Estado</th>
                         <th></th>
                       </tr>
                     </thead>
 
                     <tbody id="tbody">
-                      <?php  
+                      <?php
+                        $label = array('0'=>'danger','1'=>'success');
                         foreach ($_usu as $value) {
+                          
                           echo '
                                   <tr class="even pointer">
                                     <td class="a-center "><input type="checkbox" class="flat" name="table_records"></td>
@@ -45,21 +50,22 @@ $_usu = ($get_all['bool']?$get_all['data']:array());
                                     <td>'.$value['usu_identificacion'].'</td>
                                     <td>'.$value['usu_nombres'].'</td>
                                     <td>'.$value['usu_apellidos'].'</td>
-                                    <td>'.$misc->get_one('tbl_roles',null,'oid',$value['usu_rol_id'])['data']['rol_nombre'].'</td>
-                                    <td>'.$misc->get_one('tbl_sesiones',null,'ses_usuario_oid',$value['oid'])['data']['ses_date_sesion'].'</td>
+                                    <td>'.$misc->get_one('tbl_roles',null,'oid',$value['usu_rol_oid'])['data']['rol_nombre'].'</td>
+                                    <td>'.$misc->get_one('tbl_sesiones','MAX(ses_date_sesion) AS ses_date_sesion','ses_usuario_oid',$value['oid'])['data']['ses_date_sesion'].'</td>
+                                    <td class="text-center"><span class="label label-'.$label[$value['usu_estado']].'">'.($value['usu_estado']==1?'Activo':'Inactivo').'</span></td>
                                     <td><div class="btn-group">
-                                          <button type="button" class="btn btn-info btn-xs">Editar</button>
+                                          <a href="?mod=sistema&sub=nuevousuario&id='.$value['oid'].'" type="button" class="btn btn-info btn-xs">Editar</a>
                                           <button type="button" class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
                                           </button>
                                           <ul class="dropdown-menu" role="menu">
-                                            <li><a href="#">Editar</a>
+                                            <li><a href="?mod=sistema&sub=nuevousuario&id='.$value['oid'].'">Editar</a>
                                             </li>
-                                            <li><a href="#">Suspender</a>
+                                            <li><a onclick="setestado('.$value['oid'].','.$value['usu_estado'].',this)">'.($value['usu_estado']==1?'Suspender':'Activar').'</a>
                                             </li>
                                             <li class="divider"></li>
-                                            <li><a href="#">Reestablecer clave</a>
+                                            <li><a onclick="resetpwd('.$value['oid'].')">Reestablecer clave</a>
                                             </li>
                                           </ul>
                                         </div>
@@ -89,10 +95,6 @@ $_usu = ($get_all['bool']?$get_all['data']:array());
       </div>
     </div>
   <div id="reloadscript"></div>
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
   <!-- FastClick -->
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
   <!-- NProgress -->
@@ -119,17 +121,13 @@ $_usu = ($get_all['bool']?$get_all['data']:array());
   <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
   <!-- DateJS -->
   <script src="../plugins/DateJS/build/date.js"></script>
-  <!-- JQVMap -->
-  <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-  <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-  <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
-
+  <!-- PNotify -->
+  <script src="../plugins/pnotify/dist/pnotify.js"></script>
+  <script src="../plugins/pnotify/dist/pnotify.buttons.js"></script>
+  <script src="../plugins/pnotify/dist/pnotify.nonblock.js"></script>
   <!-- bootstrap-daterangepicker -->
   <script src="../plugins/moment/moment.min.js"></script>
   <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
-
-  <!-- Custom Theme Scripts -->
-  <script src="../plugins/build/js/custom.min.js"></script>
 
   <!-- bootstrap-wysiwyg -->
   <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
@@ -168,15 +166,76 @@ $_usu = ($get_all['bool']?$get_all['data']:array());
 
   <script>
 
-    document.title = document.title+" Ordenes de producción"; //set Titulo de la pagina
+    document.title = document.title+" Usuarios"; //set Titulo de la pagina
+    var url = "?mod=sistema&sub=usuarios";
 
+    function setestado(oid_,val,param){
+      
+      var arr = send_xhr(null,{oid:oid_,value:val,type_xhr:"set_form_update",fn:"cambiarestadousuario"});
+        
+      if (arr["bool"]) {
+        notify('Mensaje!','La operación fue realizada satisfactoriamente.','success');
+        window.location.href = url;
+      }else{
+        notify('Error!',arr["mensaje"],'error');
+      }
+    }
+    
+    function resetpwd(oid_){
+      
+      var arr = send_xhr(null,{oid:oid_,type_xhr:"set_form_update",fn:"reestablecercontrasena"});
+        
+      if (arr["bool"]) {
+        notify('Mensaje!','La contraseña se reestablecio a: <b>123456</b>.','success');
+      }else{
+        notify('Error!',arr["mensaje"],'error');
+      }
+    }
 
-
+    function send_xhr(formElement,arrElement){
+      
+      var fm = (!formElement?[]:formElement);
+      var formData = new FormData(fm);
+      for(var i in arrElement){
+        formData.append(i, arrElement[i]);
+      }
+      
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "../data/data.php",false);
+      xhr.send(formData);
+      
+      if (xhr.status == 200) {
+        
+        var result = JSON.parse(xhr.responseText);
+        
+        if (result["bool"]) {
+          return {bool:true,mensaje:result["mensaje"],data:result["data"],result:result};
+        }else{
+          return {bool:false};
+          notify('Error!',result["mensaje"],'error');
+        }
+        
+      } else {
+        return {bool:false};
+        notify('Error!','No se enviaron datos!','error');
+      }
+      
+    }
+    
+    function notify(titulo,texto,tipo) {
+      new PNotify({
+          title: titulo,
+          text: texto,
+          type: tipo, // warning, success, error, info
+          styling: 'bootstrap3'
+      });
+    }
+    
     $(document).ready(function() {
 
       //var t = $('#tablaitems').dataTable();
 
-      $tablaitems = $('#tablaordenesproduccion');
+      $tablaitems = $('#tablausuarios');
 
       $tablaitems.dataTable({
         responsive: true,
@@ -189,45 +248,16 @@ $_usu = ($get_all['bool']?$get_all['data']:array());
 
     });
   </script>
-  <!-- /bootstrap-daterangepicker -->
+<?php 
+}else{
+  $html_negate =  '<div style="padding: 100px 0px 50px 0px;" class="right_col" role="main">';
+  $html_negate .= '<center><h1><i class="fa fa-warning"></i>Usted no tiene permisos para ver esta sessión!</h1></center></div>';
+  echo $html_negate;
+}
+}
 
+?>
 
-  <!-- Select2 -->
-  <script>
-    $(document).ready(function() {
-      $("#categoria").select2({
-        placeholder: "SELECCIONE LA CATEGORÍA",
-        allowClear: false
-      });
-
-      $("#conceptos").select2({
-        placeholder: "SELECCIONE UN CONCEPTO",
-        allowClear: true
-      });
-
-      $(".tipocargo").select2({
-        placeholder: "SELECCIONE EL GRUPO",
-        allowClear: true
-      });
-
-      $(".select2_group").select2({});
-      $(".select2_multiple").select2({
-        maximumSelectionLength: 4,
-        placeholder: "With Max Selection limit 4",
-        allowClear: true
-      });
-    });
-  </script>
-  <!-- /Select2 -->
-
-
-  <!-- Autosize -->
-  <script>
-    $(document).ready(function() {
-      autosize($('.resizable_textarea'));
-    });
-  </script>
-  <!-- /Autosize -->
 
 
 

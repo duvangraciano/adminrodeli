@@ -70,7 +70,71 @@ $_rol = ($get_all['bool']?$get_all['data']:array());
       </div>
     </div>
   <div id="reloadscript"></div>
-  
+  <!-- FastClick -->
+  <script src="../plugins/fastclick/lib/fastclick.js"></script>
+  <!-- NProgress -->
+  <script src="../plugins/nprogress/nprogress.js"></script>
+  <!-- Chart.js -->
+  <script src="../plugins/Chart.js/dist/Chart.min.js"></script>
+  <!-- gauge.js -->
+  <script src="../plugins/gauge.js/dist/gauge.min.js"></script>
+  <!-- bootstrap-progressbar -->
+  <script src="../plugins/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+  <!-- iCheck -->
+  <script src="../plugins/iCheck/icheck.min.js"></script>
+  <!-- Skycons -->
+  <script src="../plugins/skycons/skycons.js"></script>
+  <!-- Flot -->
+  <script src="../plugins/Flot/jquery.flot.js"></script>
+  <script src="../plugins/Flot/jquery.flot.pie.js"></script>
+  <script src="../plugins/Flot/jquery.flot.time.js"></script>
+  <script src="../plugins/Flot/jquery.flot.stack.js"></script>
+  <script src="../plugins/Flot/jquery.flot.resize.js"></script>
+  <!-- Flot plugins -->
+  <script src="../plugins/flot.orderbars/js/jquery.flot.orderBars.js"></script>
+  <script src="../plugins/flot-spline/js/jquery.flot.spline.min.js"></script>
+  <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
+  <!-- DateJS -->
+  <script src="../plugins/DateJS/build/date.js"></script>
+
+  <!-- bootstrap-daterangepicker -->
+  <script src="../plugins/moment/moment.min.js"></script>
+  <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+  <!-- bootstrap-wysiwyg -->
+  <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
+  <script src="../plugins/jquery.hotkeys/jquery.hotkeys.js"></script>
+  <script src="../plugins/google-code-prettify/src/prettify.js"></script>
+  <!-- jQuery Tags Input -->
+  <script src="../plugins/jquery.tagsinput/src/jquery.tagsinput.js"></script>
+  <!-- Switchery -->
+  <script src="../plugins/switchery/dist/switchery.min.js"></script>
+  <!-- Select2 -->
+  <script src="../plugins/select2/dist/js/select2.full.min.js"></script>
+  <!-- Parsley -->
+  <script src="../plugins/parsleyjs/dist/parsley.min.js"></script>
+  <!-- Autosize -->
+  <script src="../plugins/autosize/dist/autosize.min.js"></script>
+  <!-- jQuery autocomplete -->
+  <script src="../plugins/devbridge-autocomplete/dist/jquery.autocomplete.min.js"></script>
+  <!-- starrr -->
+  <script src="../plugins/starrr/dist/starrr.js"></script>
+  <!-- Datatables -->
+  <script src="../plugins/datatables.net/js/jquery.dataTables.min.js"></script>
+  <script src="../plugins/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+  <script src="../plugins/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+  <script src="../plugins/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+  <script src="../plugins/datatables.net-buttons/js/buttons.flash.min.js"></script>
+  <script src="../plugins/datatables.net-buttons/js/buttons.html5.min.js"></script>
+  <script src="../plugins/datatables.net-buttons/js/buttons.print.min.js"></script>
+  <script src="../plugins/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+  <script src="../plugins/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+  <script src="../plugins/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+  <script src="../plugins/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+  <script src="../plugins/datatables.net-scroller/js/datatables.scroller.min.js"></script>
+  <script src="../plugins/jszip/dist/jszip.min.js"></script>
+  <script src="../plugins/pdfmake/build/pdfmake.min.js"></script>
+  <script src="../plugins/pdfmake/build/vfs_fonts.js"></script>  
 
   <script>
 
@@ -145,79 +209,4 @@ $_rol = ($get_all['bool']?$get_all['data']:array());
 
 ?>
 
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
-  <!-- FastClick -->
-  <script src="../plugins/fastclick/lib/fastclick.js"></script>
-  <!-- NProgress -->
-  <script src="../plugins/nprogress/nprogress.js"></script>
-  <!-- Chart.js -->
-  <script src="../plugins/Chart.js/dist/Chart.min.js"></script>
-  <!-- gauge.js -->
-  <script src="../plugins/gauge.js/dist/gauge.min.js"></script>
-  <!-- bootstrap-progressbar -->
-  <script src="../plugins/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
-  <!-- iCheck -->
-  <script src="../plugins/iCheck/icheck.min.js"></script>
-  <!-- Skycons -->
-  <script src="../plugins/skycons/skycons.js"></script>
-  <!-- Flot -->
-  <script src="../plugins/Flot/jquery.flot.js"></script>
-  <script src="../plugins/Flot/jquery.flot.pie.js"></script>
-  <script src="../plugins/Flot/jquery.flot.time.js"></script>
-  <script src="../plugins/Flot/jquery.flot.stack.js"></script>
-  <script src="../plugins/Flot/jquery.flot.resize.js"></script>
-  <!-- Flot plugins -->
-  <script src="../plugins/flot.orderbars/js/jquery.flot.orderBars.js"></script>
-  <script src="../plugins/flot-spline/js/jquery.flot.spline.min.js"></script>
-  <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
-  <!-- DateJS -->
-  <script src="../plugins/DateJS/build/date.js"></script>
-  <!-- JQVMap -->
-  <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-  <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-  <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
 
-  <!-- bootstrap-daterangepicker -->
-  <script src="../plugins/moment/moment.min.js"></script>
-  <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
-
-  <!-- Custom Theme Scripts -->
-  <script src="../plugins/build/js/custom.min.js"></script>
-
-  <!-- bootstrap-wysiwyg -->
-  <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
-  <script src="../plugins/jquery.hotkeys/jquery.hotkeys.js"></script>
-  <script src="../plugins/google-code-prettify/src/prettify.js"></script>
-  <!-- jQuery Tags Input -->
-  <script src="../plugins/jquery.tagsinput/src/jquery.tagsinput.js"></script>
-  <!-- Switchery -->
-  <script src="../plugins/switchery/dist/switchery.min.js"></script>
-  <!-- Select2 -->
-  <script src="../plugins/select2/dist/js/select2.full.min.js"></script>
-  <!-- Parsley -->
-  <script src="../plugins/parsleyjs/dist/parsley.min.js"></script>
-  <!-- Autosize -->
-  <script src="../plugins/autosize/dist/autosize.min.js"></script>
-  <!-- jQuery autocomplete -->
-  <script src="../plugins/devbridge-autocomplete/dist/jquery.autocomplete.min.js"></script>
-  <!-- starrr -->
-  <script src="../plugins/starrr/dist/starrr.js"></script>
-  <!-- Datatables -->
-  <script src="../plugins/datatables.net/js/jquery.dataTables.min.js"></script>
-  <script src="../plugins/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-  <script src="../plugins/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
-  <script src="../plugins/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
-  <script src="../plugins/datatables.net-buttons/js/buttons.flash.min.js"></script>
-  <script src="../plugins/datatables.net-buttons/js/buttons.html5.min.js"></script>
-  <script src="../plugins/datatables.net-buttons/js/buttons.print.min.js"></script>
-  <script src="../plugins/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
-  <script src="../plugins/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
-  <script src="../plugins/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-  <script src="../plugins/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
-  <script src="../plugins/datatables.net-scroller/js/datatables.scroller.min.js"></script>
-  <script src="../plugins/jszip/dist/jszip.min.js"></script>
-  <script src="../plugins/pdfmake/build/pdfmake.min.js"></script>
-  <script src="../plugins/pdfmake/build/vfs_fonts.js"></script>

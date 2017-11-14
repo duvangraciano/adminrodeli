@@ -403,6 +403,83 @@ class Miscelanea
 			return '{"mensaje":"Se completó la operación","bool":true}';
 		}	
 	}
+	
+	function guardarnuevousuario($post)
+	{
+		$_post = $post;
+
+		$query = "INSERT INTO `tbl_usuarios` ";
+		$query .= " (`".implode("`, `", array_keys($_post))."`) VALUES (";
+
+		foreach ($_post as $key => $value) {
+			if ($key == 'usu_pass') {
+				$query .= "'".password_hash($value, PASSWORD_BCRYPT, ["cost" => 8])."',";
+			}else{
+				$query .= "'".htmlspecialchars($value)."',";
+			}
+			
+		}
+
+		$query = rtrim($query,",").")";
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+		}else{
+			return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$query);
+		}	
+	}
+	
+	function actualizarusuario($post)
+	{
+		$_post = array_slice($post, 0, -1);
+		$query = "UPDATE `tbl_usuarios` SET `usu_estado`='".(isset($_post['usu_estado'])?0:1)."',";
+		foreach ($_post as $key => $value) {
+			$query .= " `".$key."` = '".htmlspecialchars($value)."',";
+		}
+		$query = rtrim($query,",")." WHERE `oid`=".$post['oid']."; ";
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+		}else{
+			return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$query);
+		}
+	}
+	
+	function cambiarestadousuario($post)
+	{
+		$_post = $post;
+		$query = "UPDATE `tbl_usuarios` SET `usu_estado`='".($_post['value']==1?0:1)."',";
+
+		$query = rtrim($query,",")." WHERE `oid`=".$post['oid']."; ";
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+		}else{
+			return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$query);
+		}
+	}
+	
+	function reestablecercontrasena($post)
+	{
+		$_post = $post;
+		$query = "UPDATE `tbl_usuarios` SET `usu_pass`='".password_hash('123456', PASSWORD_BCRYPT, ["cost" => 8])."',";
+
+		$query = rtrim($query,",")." WHERE `oid`=".$post['oid']."; ";
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+		}else{
+			return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$query);
+		}
+	}
 
 	function guardarEmpleado($post)
 	{
@@ -530,7 +607,7 @@ class Miscelanea
 			return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2]);
 		}else{
 			$rs = $result->fetch(PDO::FETCH_ASSOC);
-			if($result->rowCount()>0 && $rs['usu_pass'] == $pass){
+			if($result->rowCount()>0 && password_verify($pass, $rs['usu_pass']) ){
 				//Definir sessiones de inicio.
 				session_start();
 				session_status(PHP_SESSION_ACTIVE);

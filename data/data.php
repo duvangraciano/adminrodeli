@@ -33,6 +33,69 @@ $salud = floatval($array_pn['saludtrabajador'])/100;
 $pension = floatval($array_pn['pensiontrabajador'])/100;
 $FSP = floatval($array_pn['fsptrabajador'])/100;
 
+// ***********************
+
+if ( isset( $_POST['type_xhr'] ) ) {
+	if ( $_POST['type_xhr'] == 'get_result_one' ) {
+		$key_return = ($_POST['key_return']=='null'?NULL:$_POST['key_return']);
+		$get_one = $misc->get_one($_POST['table'],$key_return,$_POST['key'],$_POST['value']);
+		$_getone = ($get_one['bool']?$get_one['data']:array());
+		
+		if ( $get_one['bool'] ) {
+			echo '{"data":'.json_encode($_getone).',"mensaje":"'.$get_one['mensaje'].'","bool":true}';
+		}else{
+			echo '{"mensaje":'.$get_one['mensaje'].',"bool":false}';
+		}
+		
+	}
+	
+	if ( $_POST['type_xhr'] == 'get_result_all' ) {
+		
+		$get_one = $misc->get_all($_POST['table']);
+		$_getone = ($get_one['bool']?$get_one['data']:array());
+		
+		if ( $get_one['bool'] ) {
+			echo '{"data":'.json_encode($_getone).',"mensaje":"'.$get_one['mensaje'].'","bool":true}';
+		}else{
+			echo '{"mensaje":'.$get_one['mensaje'].',"bool":false}';
+		}
+		
+	}
+	
+	if ( $_POST['type_xhr'] == 'set_form' ) {
+		$fn = $_POST['fn'];
+		$post = array_slice($_POST, 0, -2);
+		$get_one = $misc->$fn($post);
+		
+		if ( $get_one['bool'] ) {
+			echo '{"data":"'.$get_one['data'].'","mensaje":"'.$get_one['mensaje'].'","bool":true}';
+		}else{
+			echo '{"mensaje":"'.$get_one['mensaje'].'","bool":false}';
+		}
+	
+	}
+	
+	if ( $_POST['type_xhr'] == 'set_form_update' ) {
+		$fn = $_POST['fn'];
+		$post = array_slice($_POST, 0, -2);
+		$get_one = $misc->$fn($post);
+		
+		if ( $get_one['bool'] ) {
+			echo '{"data":"'.$get_one['data'].'","mensaje":"'.$get_one['mensaje'].'","bool":true}';
+		}else{
+			echo '{"mensaje":"'.$get_one['mensaje'].'","bool":false}';
+		}
+	
+	}
+}	
+
+// ***********************
+
+
+
+
+if ( isset( $_POST['data'] ) ) {
+
 /////////////////// Inicio Liquidador nomina ///////////////////////////////////
 
 if ($_POST['data'] == 'liquidador') {
@@ -188,10 +251,8 @@ if ($_POST['data'] == 'parametrosnomina') {
 
 }
 
-/////////////////// Fin parametros nomina ///////////////////////////////////
-
-
-if ( isset( $_POST['data'] ) ) {
+/////////////////// Fin parametros nomina ///////////////////////////////////	
+	
 	if ( $_POST['data'] == 'guardarorden') {
 		try {
 

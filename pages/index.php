@@ -17,7 +17,7 @@ include_once '../class/class.database.php';
 $db = new Database();
 $con = $db->conexion();
 $misc = new Miscelanea($con);
-$pu = unserialize($misc->get_one('tbl_roles','rol_modulos','oid',$user['usu_rol_id'])['data']['rol_modulos']);
+$pu = unserialize($misc->get_one('tbl_roles','rol_modulos','oid',$user['usu_rol_oid'])['data']['rol_modulos']);
 
   if(isset($_GET['logout']) && $_GET['logout'] == 'logout'){
     $misc->setSession($user['oid']);
@@ -46,8 +46,8 @@ $pu = unserialize($misc->get_one('tbl_roles','rol_modulos','oid',$user['usu_rol_
     <link href="../plugins/iCheck/skins/flat/green.css" rel="stylesheet">
     <!-- bootstrap-progressbar -->
     <link href="../plugins/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
-    <!-- JQVMap -->
-    <link href="../plugins/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>
+    <!-- JQVMap 
+    <link href="../plugins/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>-->
     <!-- bootstrap-wysiwyg -->
     <link href="../plugins/google-code-prettify/bin/prettify.min.css" rel="stylesheet">
     <!-- Select2 
@@ -77,9 +77,19 @@ $pu = unserialize($misc->get_one('tbl_roles','rol_modulos','oid',$user['usu_rol_
 
     <!-- Custom Theme Style -->
     <link href="../plugins/build/css/custom.min.css" rel="stylesheet">
+    
+    <style type="text/css">
+      .form-control-feedback.right {
+          border-left: none;
+          right: 15px;
+      }
+      .has-feedback label~.form-control-feedback {
+          top: 22px;
+      }
+    </style>
   </head>
 
-  <body id="navbar" class="nav-md">
+  <body id="navbar" class="nav-sm">
     <div class="container body">
       <div class="main_container">
         <div class="col-md-3 left_col">
@@ -93,7 +103,7 @@ $pu = unserialize($misc->get_one('tbl_roles','rol_modulos','oid',$user['usu_rol_
             <!-- menu profile quick info -->
             <div class="profile">
               <div class="profile_pic">
-                <img src="../images/img.jpg" alt="..." class="img-circle profile_img">
+                <img src="../images/user.png" alt="..." class="img-circle profile_img">
               </div>
               <div class="profile_info">
                 <span>Bienvenido,</span>
@@ -130,11 +140,31 @@ $pu = unserialize($misc->get_one('tbl_roles','rol_modulos','oid',$user['usu_rol_
         <!-- top navigation -->
           <?php include_once '../pages/header.php'; ?>
         <!-- /top navigation -->
+  <script>
 
+    
+    if(window.history.forward(1) != null){
+      window.history.forward(1);
+    }
+  </script>
+    <!-- jQuery -->
+  <script src="../plugins/jquery/dist/jquery.min.js"></script>
+  <!-- Bootstrap -->
+  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+  <!-- Custom Theme Scripts -->
+  <script src="../plugins/build/js/custom.min.js"></script>
         <!-- page content -->
           <?php 
           $sub = (isset($_GET['sub'])? $_GET['sub'] : '');
           switch ($sub) {
+            case 'nuevaventa':
+              include_once '../pages/nuevaventa.php' ;
+              break;
+              
+            case 'nuevousuario':
+              include_once '../pages/nuevousuario.php' ;
+              break;
+              
             case 'roles':
               include_once '../pages/roles.php' ;
               break;
@@ -238,11 +268,31 @@ $pu = unserialize($misc->get_one('tbl_roles','rol_modulos','oid',$user['usu_rol_
       </div>
     </div>
   </body>
+
   <script>
+    var menu = (!localStorage.getItem("navbar")?"nav-md":localStorage.getItem("navbar"));
+    window.onload = function() {      document.getElementById("navbar").setAttribute("class",menu)   }
+    document.getElementById("menu_tgle").onclick = function(){ hideandshow_menu(); }
+    
+    function hideandshow_menu(){
+      var navbar = document.getElementById("navbar");
+      if (navbar.className == "nav-md") {
+        navbar.setAttribute("class","nav-sm");
+        localStorage.setItem("navbar", "nav-sm");
+      }else{
+        navbar.setAttribute("class","nav-md");
+        localStorage.setItem("navbar", "nav-md");
+      }
+      console.log(navbar.className);
+    }
+    
     $(document).ready(function() {
 
-    });
+      $("select").select2({
+        allowClear: false
+      });
 
+    });
   </script>
 </html>
 

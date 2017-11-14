@@ -101,10 +101,6 @@
       </div>
     </div>
 
-    <!-- jQuery -->
-    <script src="../plugins/jquery/dist/jquery.min.js"></script>
-    <!-- Bootstrap -->
-    <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- FastClick -->
     <script src="../plugins/fastclick/lib/fastclick.js"></script>
     <!-- NProgress -->
@@ -131,17 +127,12 @@
     <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
     <!-- DateJS -->
     <script src="../plugins/DateJS/build/date.js"></script>
-    <!-- JQVMap -->
-    <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-    <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-    <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+
 
     <!-- bootstrap-daterangepicker -->
     <script src="../plugins/moment/moment.min.js"></script>
     <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-    <!-- Custom Theme Scripts -->
-    <script src="../plugins/build/js/custom.min.js"></script>
 
     <!-- Flot -->
     <script>

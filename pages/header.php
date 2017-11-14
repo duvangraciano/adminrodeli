@@ -4,16 +4,17 @@
     <div class="nav_menu">
       <nav>
         <div class="nav toggle">
-          <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+          <a id="menu_tgle"><i class="fa fa-bars"></i></a>
         </div>
 
         <ul class="nav navbar-nav navbar-right">
           <li class="">
             <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-              <img src="../images/img.jpg" alt=""><?php echo $user['usu_nombres'].' '.$user['usu_nombres']; ?>
+              <img src="../images/user.png" alt=""><?php echo $user['usu_nombres'].' '.$user['usu_apellidos']; ?>
               <span class=" fa fa-angle-down"></span>
             </a>
             <ul class="dropdown-menu dropdown-usermenu pull-right">
+              <!--
               <li><a href="javascript:;"> Perfil</a></li>
               <li>
                 <a href="javascript:;">
@@ -22,10 +23,12 @@
                 </a>
               </li>
               <li><a href="javascript:;">Help</a></li>
+              -->
               <li><a href="?logout=logout"><i class="fa fa-sign-out pull-right"></i> Salir</a></li>
             </ul>
           </li>
-
+          
+          <!--
           <li role="presentation" class="dropdown">
             <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
               <i class="fa fa-envelope-o"></i>
@@ -90,6 +93,7 @@
               </li>
             </ul>
           </li>
+          -->
         </ul>
       </nav>
     </div>
