@@ -1,4 +1,7 @@
-<?php  
+<?php
+if (session_status() != PHP_SESSION_NONE) {
+if (isset($pu['ver_ordenes_produccion'])) {
+  
 $ordenesProduccion = $misc->listarOrdenesProduccion()->fetchAll(PDO::FETCH_ASSOC);
 
 $arrEstado = json_decode('[{"id":"1","estado":"Confirmado","label":"success"},{"id":"2","estado":"Anulado","label":"warning"},{"id":"3","estado":"Registrado","label":"default"}]', true); // json_decode para Objetos se denife True, para Arreglos simples False.
@@ -70,10 +73,7 @@ $arrConceptos = json_decode('[{"oid":"1","codigo":"H2050A","concepto":"Ventana e
       </div>
     </div>
   <div id="reloadscript"></div>
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+
   <!-- FastClick -->
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
   <!-- NProgress -->
@@ -109,8 +109,6 @@ $arrConceptos = json_decode('[{"oid":"1","codigo":"H2050A","concepto":"Ventana e
   <script src="../plugins/moment/moment.min.js"></script>
   <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-  <!-- Custom Theme Scripts -->
-  <script src="../plugins/build/js/custom.min.js"></script>
 
   <!-- bootstrap-wysiwyg -->
   <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
@@ -210,5 +208,15 @@ $arrConceptos = json_decode('[{"oid":"1","codigo":"H2050A","concepto":"Ventana e
   </script>
   <!-- /Autosize -->
 
+
+<?php 
+}else{
+  $html_negate =  '<div style="padding: 100px 0px 50px 0px;" class="right_col" role="main">';
+  $html_negate .= '<center><h1><i class="fa fa-warning"></i>Usted no tiene permisos para ver esta sessión!</h1></center></div>';
+  echo $html_negate;
+}
+}
+
+?>
 
 

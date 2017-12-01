@@ -191,6 +191,18 @@ class Miscelanea
 		$result->execute();
 		return $result;
 	}
+	
+	function consultaExistencias($post){
+		$query = "SELECT * FROM `tbl_materiaprima` WHERE `oid`= '".$post["oid"]."' ";
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+		}else{
+			return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->fetch(PDO::FETCH_ASSOC),'rowcount'=>$result->rowCount());
+		}
+	}
 
 	function consularCodigo($cod)
 	{
@@ -355,6 +367,151 @@ class Miscelanea
 			return '{"mensaje":"Se completó la operación","bool":true}';
 		}
 
+	}
+	
+	function guardar_entrada_almacen($post)
+	{
+	
+		$items = json_decode($post['items'],true);
+		$count = 0;
+		$cant_ext = array();
+		foreach ($items as $val) {
+			$rs = $this->consultaExistencias($val);
+			
+			if ($rs["bool"] && $rs["rowcount"] > 0) {
+				if ($rs["data"]["mate_existencias"]) {
+					$cant_ = floatval( $rs["data"]["mate_existencias"] ) + floatval( $val['cantidad'] );
+					$costo_ = ($rs["data"]["mate_costocompra"] == 0 ? floatval( $val['costounitario'] ) : ( floatval( $rs["data"]["mate_costocompra"] ) + floatval( $val['costounitario'] ) ) /2);
+					array_push($cant_ext, array('oid' => $val['oid'],'cantidad' => $cant_, 'costo' => $costo_ ) );
+					
+					$count++;
+					if ($count >= count($items)) {
+						$str_q = '';
+						foreach ($cant_ext as $k) {
+							$str_q .= "UPDATE `tbl_materiaprima` SET `mate_existencias`='".$k['cantidad']."' , `mate_costocompra`='".$k['costo']."' WHERE `oid`='".$k['oid']."'; ";
+						}
+						
+						$_post = $post;
+						$str_q .= "INSERT INTO `tbl_entradaalmacen` ";
+						$str_q .= "(enal_date_documento, 	enal_id_tercero, enal_tipo_documento, 	enal_num_documento, enal_tipo_movimiento, enal_data_items, enal_observaciones, enal_iva, enal_subtotal, enal_descuentos, enal_total, enal_estado, 	enal_usuario_id ) ";
+						$str_q .= "VALUES('".date("Y-m-d 00:00:00", strtotime($post['enal_date_documento']) )."','".$post['enal_id_tercero']."','".$post['enal_tipo_documento']."','".$post['enal_num_documento']."','".$post['enal_tipo_movimiento']."','".serialize($items)."','".$post['enal_observaciones']."','0','0','0','0','CONFIRMADO','".$_SESSION['login']['oid']."') ;";
+						
+						$result = $this->conn->prepare( $str_q );
+						if (! $result->execute() ) {
+							$err = $result->errorInfo();
+							return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+						}else{
+							return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$str_q);
+						}
+					}
+				}else{
+					return array('bool'=>false,'mensaje'=>'Se produjo un error: No se puede procesar la operación porque hubo un cambio en el stock del producto: '.$val['desc'].', stock actual: '.$rs["data"]["mate_existencias"]);
+					break;
+				}
+			}else{
+				return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$rs['mensaje']);
+				break;
+			}
+			
+			
+		}
+	}
+	
+	function guardar_venta_contado($post)
+	{
+	
+		$items = json_decode($post['items'],true);
+		$saldos = json_decode($post['saldos'],true);
+		$pago = json_decode($post['pago'],true);
+		$count = 0;
+		$cant_ext = array();
+		foreach ($items as $val) {
+			$rs = $this->consultaExistencias($val);
+			
+			if ($rs["bool"] && $rs["rowcount"] > 0) {
+				if ($rs["data"]["mate_existencias"] >= $val["cant"] && $val["cant"] <= $rs["data"]["mate_existencias"]) {
+					$cant_ = floatval( $rs["data"]["mate_existencias"] ) - floatval( $val['cant'] );
+					array_push($cant_ext, array('oid' => $val['oid'],'value' => $cant_ ) );
+					
+					$count++;
+					if ($count >= count($items)) {
+						$str_q = '';
+						foreach ($cant_ext as $k) {
+							$str_q .= "UPDATE `tbl_materiaprima` SET `mate_existencias`='".$k['value']."' WHERE `oid`='".$k['oid']."'; ";
+						}
+						
+						$_post = $post;
+						$str_q .= "INSERT INTO `tbl_ventascontado` ";
+						$str_q .= "(vco_consecutivo, 	vco_tipodocumento, vco_tipomovimiento, 	vco_data_items, vco_subtotal, vco_total_iva, vco_total_descuento, vco_total_total, vco_valor_cheque, vco_valor_electronica, vco_valor_efectivo, vco_valor_devolucion, vco_estado, vco_vendedor_oid ) ";
+						$str_q .= "VALUES('','FACTURA','VENTAS_DE_CONTADO','".serialize($items)."','".$saldos['subtotal']."','".$saldos['iva']."','".$saldos['descuento']."','".$saldos['total']."','".$pago['cheques']."','".$pago['electronica']."','".$pago['efectivo']."','".$pago['devolucion']."','CONFIRMADO','".$_SESSION['login']['oid']."') ;";
+						
+						$result = $this->conn->prepare( $str_q );
+						if (! $result->execute() ) {
+							$err = $result->errorInfo();
+							return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+						}else{
+							return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$str_q);
+						}
+					}
+				}else{
+					return array('bool'=>false,'mensaje'=>'Se produjo un error: No se puede procesar la operación porque hubo un cambio en el stock del producto: '.$val['desc'].', stock actual: '.$rs["data"]["mate_existencias"]);
+					break;
+				}
+			}else{
+				return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$rs['mensaje']);
+				break;
+			}
+			
+			
+		}
+	}
+	
+	function guardar_venta_credito($post)
+	{
+	
+		$items = json_decode($post['items'],true);
+		$saldos = json_decode($post['saldos'],true);
+		$count = 0;
+		$cant_ext = array();
+		foreach ($items as $val) {
+			$rs = $this->consultaExistencias($val);
+			
+			if ($rs["bool"] && $rs["rowcount"] > 0) {
+				if ($rs["data"]["mate_existencias"] >= $val["cant"] && $val["cant"] <= $rs["data"]["mate_existencias"]) {
+					$cant_ = floatval( $rs["data"]["mate_existencias"] ) - floatval( $val['cant'] );
+					array_push($cant_ext, array('oid' => $val['oid'],'value' => $cant_ ) );
+					
+					$count++;
+					if ($count >= count($items)) {
+						$str_q = '';
+						foreach ($cant_ext as $k) {
+							$str_q .= "UPDATE `tbl_materiaprima` SET `mate_existencias`='".$k['value']."' WHERE `oid`='".$k['oid']."'; ";
+						}
+						
+						$_post = $post;
+						$str_q .= "INSERT INTO `tbl_cuentasxcobrar` ";
+						$str_q .= "(cxc_consecutivo,cxc_tipodocumento,cxc_tercero_cliente_oid,cxc_diasvencimiento,cxc_fechavencimiento,cxc_data_items,cxc_subtotal,cxc_total_iva,cxc_total_descuento,	cxc_total_total,cxc_estado,cxc_vendedor_oid) ";
+						$str_q .= "VALUES('','FACTURA','".$post['prov_identificacion']."',".$post['dv'].",'".date("Y-m-d h:i:s", strtotime(date("d-m-Y")."+ ".$post['dv']." days"))."','".serialize($items)."','".$saldos['subtotal']."','".$saldos['iva']."','".$saldos['descuento']."','".$saldos['total']."','CONFIRMADO','".$_SESSION['login']['oid']."') ;";
+						
+						$result = $this->conn->prepare( $str_q );
+						if (! $result->execute() ) {
+							$err = $result->errorInfo();
+							return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+						}else{
+							return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$str_q);
+						}
+					}
+				}else{
+					return array('bool'=>false,'mensaje'=>'Se produjo un error: No se puede procesar la operación porque hubo un cambio en el stock del producto: '.$val['desc'].', stock actual: '.$rs["data"]["mate_existencias"]);
+					break;
+				}
+			}else{
+				return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$rs['mensaje']);
+				break;
+			}
+			
+			
+		}
 	}
 
 	function guardarCompuesto($arrPost,$files)

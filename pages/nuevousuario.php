@@ -97,7 +97,7 @@ $_rol = ($get_all['bool']?$get_all['data']:array());
 
               <div class="row">
                 <div class="form-group col-md-12 col-sm-12 col-xs-12">
-                  <button id="btnguardar" type="button" class="btn btn-success pull-right"><i class="fa fa-save"></i> Guardar</button>
+                  <button id="btnguardar" type="button" onclick="guardar()" class="btn btn-success pull-right"><i class="fa fa-save"></i> Guardar</button>
                   <button id="btnclean" type="button" class="btn btn-default pull-right"><i class="fa fa-times"></i> Cancelar</button>
                 </div>
               </div>
@@ -188,10 +188,10 @@ $_rol = ($get_all['bool']?$get_all['data']:array());
     var form = document.getElementById("formusuario"); //Get
     var url = "?mod=sistema&sub=nuevousuario";
     var get_oid = null;
-    window.onload = function(){ load_data(); }
+    load_data();
     
     form["btnclean"].onclick = function(){ window.location.href = "?mod=sistema&sub=usuarios"; };
-    form["btnguardar"].onclick = function(){ guardar(); };
+    //form["btnguardar"].onclick = function(){ guardar(); };
     form["usu_identificacion"].onblur = function(){ verificarDuplicados(this,"tbl_usuarios","usu_identificacion"); };
     form["usu_id"].onblur = function(){ verificarDuplicados(this,"tbl_usuarios","usu_id"); };
     form["usu_pass"].onblur = function(){ validarContrasena(this); };

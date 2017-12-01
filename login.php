@@ -12,7 +12,7 @@ $misc = new Miscelanea($con);
 if(isset($_SESSION['login']) && $_SESSION['loggedin'] == true){
   header('Location: pages/index.php');
 }else{
-  $cfg = $misc->get_one('tbl_configuracion','conf_empresa,conf_app','oid','1');
+  $cfg = $misc->get_one('tbl_configuracion','*','oid','1');
   $conf_empresa = unserialize($cfg['data']['conf_empresa']);
   $conf_app = unserialize($cfg['data']['conf_app']);
 ?>

@@ -94,20 +94,13 @@ $arrConceptos = json_decode('[{"oid":"1","codigo":"H2050A","concepto":"Ventana e
       </div>
     </div>
   <div id="reloadscript"></div>
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+
   <!-- FastClick -->
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
   <!-- NProgress -->
   <script src="../plugins/nprogress/nprogress.js"></script>
-  <!-- Chart.js -->
-  <script src="../plugins/Chart.js/dist/Chart.min.js"></script>
-  <!-- gauge.js -->
-  <script src="../plugins/gauge.js/dist/gauge.min.js"></script>
-  <!-- bootstrap-progressbar -->
-  <script src="../plugins/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+
+
   <!-- iCheck -->
   <script src="../plugins/iCheck/icheck.min.js"></script>
   <!-- Skycons -->
@@ -124,11 +117,10 @@ $arrConceptos = json_decode('[{"oid":"1","codigo":"H2050A","concepto":"Ventana e
   <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
   <!-- DateJS -->
   <script src="../plugins/DateJS/build/date.js"></script>
-  <!-- JQVMap -->
-  <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-  <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-  <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
-
+  <!-- PNotify -->
+  <script src="../plugins/pnotify/dist/pnotify.js"></script>
+  <script src="../plugins/pnotify/dist/pnotify.buttons.js"></script>
+  <script src="../plugins/pnotify/dist/pnotify.nonblock.js"></script>
   <!-- bootstrap-daterangepicker -->
   <script src="../plugins/moment/moment.min.js"></script>
   <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>

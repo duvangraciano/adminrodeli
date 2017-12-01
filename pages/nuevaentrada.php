@@ -1,4 +1,8 @@
-<?php  
+<?php
+
+if (session_status() != PHP_SESSION_NONE) {
+if (isset($pu['agregar_editar_entrada_almacen'])) {
+
 //$lc = $misc->listarConceptos();
 $arrCategoria = $misc->listarCategorias()->fetchAll(PDO::FETCH_ASSOC); // json_decode para Objetos se denife True, para Arreglos simples False.
 $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
@@ -27,7 +31,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-md-offset-6 col-xs-12">
                   <label class="control-label" for="enal_tipo_documento">Tipo Documento </label>
-                  <select class="form-control" id="enal_tipo_documento" data-placeholder="SELECCIONE" name="enal_tipo_documento"  tabindex="-1" required>
+                  <select class="form-control" id="enal_tipo_documento" data-placeholder="SELECCIONE" name="enal_tipo_documento"  tabindex="-1" title="Tipo documento" required>
                     <option></option>
                     <?php foreach ($arrTdocumentos as $val) {
                             echo '<option value="'.$val['oid'].'">'.strtoupper($val['descripcion']).'</option>';
@@ -36,7 +40,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="enal_num_documento">No. Documento </label>
-                  <input id="enal_num_documento" type="text" class="form-control" name="enal_num_documento" placeholder="" title="" required>
+                  <input id="enal_num_documento" type="text" class="form-control" name="enal_num_documento" placeholder="" title="Número documento" required>
                 </div>
               </div>
 
@@ -44,30 +48,42 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="enal_id_tercero"><small>Identificador</small> </label>
                   <div class="input-group">
-                    <input type="text" id="enal_id_tercero" name="enal_id_tercero" class="form-control" placeholder="NIT/CC/NUIP" required>
+                    <input type="text" id="enal_id_tercero" name="enal_id_tercero" class="form-control" placeholder="NIT/CC/NUIP" title="Identificador" required>
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-primary" title="Crear nuevo tercero"><i class="fa fa-plus"></i></button>
+                        <button id="addprov" type="button" class="btn btn-primary"><i class="fa fa-plus"></i></button>
                     </span>
                   </div>                  
                 </div>
                 <div class="form-group col-md-6 col-sm-6 col-xs-12">
                   <label class="control-label" for="tercero"><small>Proveedor</small> </label>
-                  <input type="text" id="tercero" name="" class="form-control" placeholder="" readonly>
+                  <input type="text" id="tercero" class="form-control" placeholder="" readonly>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="enal_tipo_movimiento">Tipo movimiento </label>
-                  <select class="form-control" id="enal_tipo_movimiento" data-placeholder="SELECCIONE" name="enal_tipo_movimiento"  tabindex="-1" required>
+                  <select class="form-control" id="enal_tipo_movimiento" data-placeholder="SELECCIONE" name="enal_tipo_movimiento" title="Tipo movimiento"  tabindex="-1" required>
                     <option></option>
                     <?php foreach ($arrTmovimientos as $val) {
                             echo '<option value="'.$val['oid'].'">'.strtoupper($val['descripcion']).'</option>';
                     } ?>
                   </select>
                 </div>
+                <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                  <label class="control-label" for="">Total Factura </label>
+                  <input type="number" id="total_factura" min="1" name="enal_total" class="form-control"  placeholder="Total Factura" required>
+                </div>
               </div>
 
               <div class="row">
                 <div class="form-group col-md-8 col-sm-8 col-xs-12">
-                  <textarea id="enal_observaciones" name="enal_observaciones" class="form-control" placeholder="OBSERVACIONES" title="Observaciones"></textarea>
+                  <textarea id="enal_observaciones" name="enal_observaciones" class="form-control" placeholder="OBSERVACIONES"></textarea>
+                </div>
+                <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                  <label class="control-label" for="">Total Descuentos</label>
+                  <input type="number" id="total_descuentos" min="1" name="enal_descuentos" class="form-control"  placeholder="Total Descuentos" required>
+                </div>
+                <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                  <label class="control-label" for="">Total Iva </label>
+                  <input type="number" id="total_iva" min="1" name="enal_iva" class="form-control"  placeholder="Total Iva">
                 </div>
               </div>              
               
@@ -76,41 +92,34 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
               <div class="row">
                 <div class="form-group col-md-4 col-sm-4 col-xs-12">
                   <label class="control-label" for="concepto">Producto/Concepto </label>
-                  <select class="form-control" id="concepto" name="" tabindex="-1" title="Producto/Concepto">
+                  <select class="form-control" id="concepto" name="" tabindex="-1" >
                     <option></option>
                   </select>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="">Unidad Medida </label>
-                  <input type="text" id="unidad_medida" class="form-control" title="Unidad Medida" placeholder="Unidad Medida" readonly>
+                  <input type="text" id="unidad_medida" class="form-control"  placeholder="Unidad Medida" readonly>
                 </div>              
                 <div class="form-group col-md-1 col-sm-1 col-xs-12">
                   <label class="control-label" for="">Cantidad </label>
-                  <input type="number" id="cantidad" min="1" name="" class="form-control" title="Cantidad" placeholder="Cantidad">
+                  <input type="number" id="cantidad" min="1" name="" class="form-control"  placeholder="Cantidad">
                 </div>                
-                <div class="form-group col-md-1 col-sm-1 col-xs-12">
-                  <label class="control-label" for="">Iva %</label>
-                  <input type="number" id="iva" min="1" name="" class="form-control" title="Iva %" placeholder="Iva%">
-                </div>
+
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <label class="control-label" for="">Total Iva </label>
-                  <input type="number" id="total_iva" min="1" name="" class="form-control" title="Total Iva" placeholder="Total Iva">
-                </div>
-                <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <label class="control-label" for="">Total Neto </label>
-                  <input type="number" id="total_neto" min="1" name="" class="form-control" title="Total Neto" placeholder="Total Neto">
+                  <label class="control-label" for="">Total neto </label>
+                  <input type="number" id="total_neto" min="1" name="" class="form-control"  placeholder="Total Neto">
                 </div>
               </div>
  
               <div class="row">
                 <div class="form-group col-md-6 col-sm-6 col-xs-12">
-                  <input type="text" id="observaciones" name="" class="form-control" title="Observaciones" placeholder="OBSERVACIONES">
+                  <input type="text" id="observaciones" name="" class="form-control"  placeholder="OBSERVACIONES">
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <input type="number" id="costo_unitario" min="1" class="form-control" title="Costo Unitario" placeholder="Costo Unitario" disabled>
+                  <input type="number" id="costo_unitario" min="1" class="form-control"  placeholder="Costo Unitario" disabled>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <input type="number" id="valor_total" min="1" class="form-control" title="Valor Total" placeholder="Valor Total" disabled>
+                  <input type="number" id="valor_total" min="1" class="form-control"  placeholder="Valor Total" disabled>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <button id="btnadd" type="button" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Añadir</button>
@@ -120,6 +129,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
               <div class="row">
                 <div class="col-md-12 col-sm-12 col-xs-12">
                   <div class="table-responsive">
+                    <button onclick="removeritem()" type="button" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Remover</button>
                     <table id="tablaitems" class="table table-striped table-bordered bulk_action" style="width: 100%">
                       <thead>
                         <tr>
@@ -127,7 +137,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
                           <th>Codigo </th>
                           <th style="width: 60%;">Producto/Concepto </th>
                           <th>Cantidad </th>
-                          <th>Precio </th>
+                          <th>Costo_Unitario </th>
                           <th>Subtotal </th>
                         </tr>
                       </thead>
@@ -137,8 +147,8 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
                       <tfoot>
                         <tr>
                           <td colspan="4"></td>
-                          <td>SUBTOTAL:</td>
-                          <td id="subtotal">[Subtotal]</td>
+                          <td>SUBTOTAL: $</td>
+                          <td id="subtotal">0</td>
                         </tr>
                       </tfoot>
                     </table>
@@ -171,16 +181,13 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
       </div>
     </div>
   <div id="reloadscript"></div>
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+
   <!-- FastClick -->
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
-  <!-- NProgress -->
-  <script src="../plugins/nprogress/nprogress.js"></script>
-  <!-- Chart.js -->
-  <script src="../plugins/Chart.js/dist/Chart.min.js"></script>
+  <!-- PNotify -->
+  <script src="../plugins/pnotify/dist/pnotify.js"></script>
+  <script src="../plugins/pnotify/dist/pnotify.buttons.js"></script>
+  <script src="../plugins/pnotify/dist/pnotify.nonblock.js"></script>
   <!-- gauge.js -->
   <script src="../plugins/gauge.js/dist/gauge.min.js"></script>
   <!-- bootstrap-progressbar -->
@@ -207,8 +214,6 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
   <script src="../plugins/moment/moment.min.js"></script>
   <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-  <!-- Custom Theme Scripts -->
-  <script src="../plugins/build/js/custom.min.js"></script>
 
   <!-- bootstrap-wysiwyg -->
   <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
@@ -252,6 +257,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
     var arrItems = [], esMedida = 0;
     var form = document.getElementById("formnuevaentrada");
     var tercero = document.getElementById("enal_id_tercero");
+    var url = "?mod=almacen&sub=nuevaentrada";
     
     document.title = document.title+" Orden de producción"; //set Titulo de la pagina
     document.getElementById("total_iva").onchange = function(){ recalcularTotalItem(); };
@@ -262,15 +268,34 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
     
     document.getElementById("btnadd").onclick = function(){ addItemTable() };
     form["btnclean"].onclick = function(){ window.location.reload(true); };
-    document.getElementById("btnguardar").onclick = function(){ guardarOrden() };
+    document.getElementById("btnguardar").onclick = function(){ guardar() };
+    
+    function Abrir_ventana (pagina) {
+      var opciones="toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, width=508, height=365, top=85, left=140";
+      window.open(pagina,"",opciones);
+    }
 
     function recalcularTotalItem(){
-      var total_iva = parseFloat(document.getElementById("total_iva").value);
       var total_neto = parseFloat(document.getElementById("total_neto").value);
       var cantidad = parseFloat(document.getElementById("cantidad").value);
       
-      document.getElementById("valor_total").value = (isNaN(total_iva) ?0:total_iva)+total_neto;
-      document.getElementById("costo_unitario").value = ( ((isNaN(total_iva) ?0:total_iva)+total_neto)/cantidad ).toFixed(2);
+      document.getElementById("valor_total").value = total_neto;
+      document.getElementById("costo_unitario").value = (total_neto/cantidad ).toFixed(2);
+    }
+    
+    function validar_total_factura(){
+      var descuentos = form["total_descuentos"].value;
+      var total = form["total_factura"].value;
+      var iva = form["total_iva"].value;
+      var subtotal = sessionStorage.getItem("subtotal_factura");
+      
+      if( ((parseFloat(subtotal)+parseFloat(iva))-parseFloat(descuentos)).toFixed(2) == parseFloat(total).toFixed(2)){
+        return true;
+      }else{
+        notify('Advertencia!','Los valores totales no coinciden, con la relación de items. Verifique por favor.','warning');
+        return false;
+      }
+      
     }
 
     function setUnidadMedida(value) {
@@ -279,6 +304,8 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
       
       document.getElementById("unidad_medida").value = getData["mate_tipomedida_oid"];
     }
+    
+
 
     // Función que realiza una busqueda por numero de indentificacion del proveedor y/o tercero.
     tercero.onblur = function(){  
@@ -363,8 +390,6 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
       var concepto =  document.getElementById("concepto");
       var unidad_medida = document.getElementById("unidad_medida");
       var cantidad = document.getElementById("cantidad");
-      var iva = document.getElementById("iva");
-      var total_iva = document.getElementById("total_iva");
       var total_neto = document.getElementById("total_neto");
       var valor_total = document.getElementById("valor_total");
       var costo_unitario = document.getElementById("costo_unitario");
@@ -380,8 +405,6 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
                     concepto:textConcepto[1],
                     umedida:unidad_medida.value,
                     cantidad:(cantidad.value == ""?0:parseFloat(cantidad.value)),
-                    iva:(iva.value == ""?0:parseFloat(iva.value)),
-                    totaliva:(total_iva.value == ""?0:parseFloat(total_iva.value)),
                     totalneto:(total_neto.value == ""?0:parseFloat(total_neto.value)),
                     costounitario:(costo_unitario.value == ""?0:parseFloat(costo_unitario.value)),
                     valortotal:(valor_total.value == ""?0:parseFloat(valor_total.value)),
@@ -391,52 +414,80 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
         //calularCostos();
         funcionListarTabla();
 
-        limpiarCampos([concepto,unidad_medida,cantidad,iva,total_iva,total_neto,valor_total,costo_unitario,observaciones]);
+        limpiarCampos([concepto,unidad_medida,cantidad,total_neto,valor_total,costo_unitario,observaciones]);
       }
 
     }
 
-    function guardarOrden(){
-      var prov_identificacion = document.getElementById("prov_identificacion").value;
-      var pro_nombre_responsable = document.getElementById("pro_nombre_responsable").value;
-
-      if (prov_identificacion != '' && pro_nombre_responsable != '') {
-        if (globalArrOrdPro.length > 0) {
+    function guardar(){
+      
+      if ( validarform() && arrItems.length > 0 && validar_total_factura()) {
+        var arr = send_xhr(form,{items:JSON.stringify(arrItems),enal_subtotal:sessionStorage.getItem("subtotal_factura"),type_xhr:"set_form",fn:"guardar_entrada_almacen"});
+        
+        if (arr["bool"]) {
           
-          var xhr = new XMLHttpRequest();
-          var formData = new FormData();
-
-          formData.append("globalArrOrdPro", JSON.stringify(globalArrOrdPro));
-          formData.append("prov_nombre_responsable", pro_nombre_responsable);
-          formData.append("prov_identificacion", prov_identificacion);
-          formData.append("data", "guardarorden");
-          
-          xhr.open("POST", "../data/data.php",false);
-          xhr.send(formData);
-
-          if (xhr.status == 200) {
-            /*
-            var result = JSON.parse(xhr.responseText);
-            if (result["bool"]) {
-              alert(result["mensaje"]);
-              window.location.reload(true);
+            notify('Mensaje!','La operación fue realizada satisfactoriamente.','success');
+            var confimar = confirm("Desea imprimir el comprobante de entrada?");
+            
+            if(confimar){
+              Abrir_ventana('?mod=almacen&sub=nuevaentrada');
+              window.location.href = url;                    
             }else{
-              alert(result["mensaje"]);
+              window.location.href = url;
             }
-            */
-          } else {
-            alert('No se enviaron datos!');
-          }
+
+          
         }else{
-          alert("No hay ningun concepto en la orden.");
+          notify('Error!',arr["mensaje"],'error');
         }
+        
       }else{
-        alert("Campo Identificación o Nombre Responsable están vacios.");
+        notify('Advertencia!','No se puede procesar la información, puede que tenga items vacios!','warning');
       }
     }
 
-    function funcionListarTabla() {
+    function validarform() {
+      
+      var c = 0; var nc = countInputs();
+      for (var i = 0; i < form.length; i++) {
+        if (form[i].attributes["title"]) {
+          
+          if (/^\s+/g.test(form[i].value) === true) {
+            //alert("El campo "+form[i].title+" contiene carácteres inválidos!");
+            notify('Advertencia!','El campo '+form[i].title+' contiene carácteres inválidos!','warning');
+            return false;
+            break;
+          }else{
+            if (form[i].value != ""){
+              c++;
+              if (c >= nc) {
+                return true;
+                break;
+              }
+            }else{
+              //alert("El campo "+form[i].title+" no puede estar vacio!");
+              notify('Advertencia!','El campo '+form[i].title+' no puede estar vacio!','warning');
+              return false;
+              break;
+            }
+          }
 
+        }
+      }
+    }
+    
+    function countInputs(){
+      var c = 0;
+      for (var i = 0; i < form.length; i++) {
+        if (form[i].attributes["title"]) {
+          c++;
+        }
+      }
+      return c;
+    }
+    
+    function funcionListarTabla() {
+      subtotal = 0;
       var html = '';
 
         for (var i = 0; i < arrItems.length; i++) {
@@ -451,6 +502,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
           html += '</tr>';
           
           subtotal = arrItems[i]['valortotal']+subtotal;
+          sessionStorage.setItem("subtotal_factura", subtotal);
           
         }
           document.getElementById("tbody").innerHTML = html;
@@ -475,22 +527,59 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
     function removeritem(){
       var arrTbody = document.getElementById("tablaitems");
       var items = arrTbody.getElementsByTagName('input');
-
+      
       var index = [];
 
       for (var i = 1; i < items.length; i++) {        
         if (items[i].type === "checkbox") {
           if (items[i].checked === false) {
-            index.push(globalArrOrdPro[i-1]);
+            index.push(arrItems[i-1]);
           }
         }   
       }
 
-      globalArrOrdPro = index;
+      arrItems = index;
       funcionListarTabla();
     }
 
+    function send_xhr(formElement,arrElement){
+      
+      
+      var formData = (!formElement? new FormData() : new FormData(formElement) );
+      for(var i in arrElement){
+        formData.append(i, arrElement[i]);
+      }
+      
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "../data/data.php",false);
+      xhr.send(formData);
+      
+      if (xhr.status == 200) {
+        
+        var result = JSON.parse(xhr.responseText);
+        
+        if (result["bool"]) {
+          return {bool:true,mensaje:result["mensaje"],data:result["data"],result:result};
+        }else{
+          return {bool:false,mensaje:result["mensaje"]};
+          notify('Error!',result["mensaje"],'error');
+        }
+        
+      } else {
+        return {bool:false};
+        notify('Error!','No se enviaron datos!','error');
+      }
+      
+    }
 
+    function notify(titulo,texto,tipo) {
+      new PNotify({
+          title: titulo,
+          text: texto,
+          type: tipo, // warning, success, error, info
+          styling: 'bootstrap3'
+      });
+    }
 
 
     $(document).ready(function() {
@@ -503,12 +592,9 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
         searching: false,
         responsive: true,
         paging:   false,
-        ordering: false,
-        dom: '<"toolbar">frtip'
+        ordering: false
       });
       
-
-      $("div.toolbar").html('<button onclick="removeritem()" type="button" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Remover item</button>');
 
     });
   </script>
@@ -518,6 +604,12 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
   <!-- Select2 -->
   <script>
     $(document).ready(function() {
+      $('#').tooltip({
+        placement : "top",
+        title : function placeholder(){ return this.placeholder }
+      });
+      
+      
       $("select").select2();
       $("#categoria").select2({
         placeholder: "SELECCIONE LA CATEGORÍA",
@@ -558,4 +650,12 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
   <!-- /Autosize -->
 
 
+<?php 
+}else{
+  $html_negate =  '<div style="padding: 100px 0px 50px 0px;" class="right_col" role="main">';
+  $html_negate .= '<center><h1><i class="fa fa-warning"></i>Usted no tiene permisos para ver esta sessión!</h1></center></div>';
+  echo $html_negate;
+}
+}
 
+?>

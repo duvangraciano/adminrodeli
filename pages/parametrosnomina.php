@@ -1,4 +1,8 @@
 <?php 
+
+if (session_status() != PHP_SESSION_NONE) {
+if (isset($pu['parametros_nomina'])) {
+  
 $sce = null; $pe = null; $sst = null; $apro = null; $vv = null;
 $i = 0;
 
@@ -234,7 +238,7 @@ echo '';
 			                  	<div class="form-group">
 				                  	<label class="control-label" for="cesantias">Cesantías %  </label>
 				                  	<div class="input-group">
-		                         <input type="text"" id="cesantias" name="cesantias" required="required" class="form-control" <?php echo 'value="'.( isset($apro['cesantias'])? $apro['cesantias'] : '0').'"'; ?> placeholder="0%">
+		                         <input type="text" id="cesantias" name="cesantias" required="required" class="form-control" <?php echo 'value="'.( isset($apro['cesantias'])? $apro['cesantias'] : '0').'"'; ?> placeholder="0%">
 		                         <span class="input-group-btn"><button type="button" onclick="guardar('apropiaciones', $('#cesantias').val(),'cesantias')" class="btn btn-primary btnguardar"><i class="fa fa-save"></i> Guardar</button></span>
 		                        </div>
 		                      </div>
@@ -331,10 +335,7 @@ echo '';
     </div>
   </div>
 
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+
   <!-- Formvalidation -->
   <script src="../plugins/formvalidation/formValidation.min.js"></script>
 	<script src="../plugins/formvalidation/framework/bootstrap.min.js"></script>
@@ -374,9 +375,6 @@ echo '';
   <!-- bootstrap-daterangepicker -->
   <script src="../plugins/moment/moment.min.js"></script>
   <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
-
-  <!-- Custom Theme Scripts -->
-  <script src="../plugins/build/js/custom.min.js"></script>
 
   <!-- bootstrap-wysiwyg -->
   <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
@@ -685,3 +683,13 @@ echo '';
     });
   </script>
   <!-- /Starrr -->
+  
+  <?php 
+}else{
+  $html_negate =  '<div style="padding: 100px 0px 50px 0px;" class="right_col" role="main">';
+  $html_negate .= '<center><h1><i class="fa fa-warning"></i>Usted no tiene permisos para ver esta sessión!</h1></center></div>';
+  echo $html_negate;
+}
+}
+
+?>

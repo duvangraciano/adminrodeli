@@ -1,4 +1,8 @@
 <?php  
+
+if (session_status() != PHP_SESSION_NONE) {
+if (isset($pu['ver_clientes'])) {
+  
 $proveedores = array();//$misc->listarterceros()->fetchAll(PDO::FETCH_ASSOC);
 
 $arrEstado = json_decode('[{"id":"1","estado":"Confirmado","label":"success"},{"id":"2","estado":"Anulado","label":"warning"},{"id":"3","estado":"Registrado","label":"default"}]', true); // json_decode para Objetos se denife True, para Arreglos simples False.
@@ -215,4 +219,12 @@ $arrConceptos = json_decode('[{"oid":"1","codigo":"H2050A","concepto":"Ventana e
   <!-- /Autosize -->
 
 
+<?php 
+}else{
+  $html_negate =  '<div style="padding: 100px 0px 50px 0px;" class="right_col" role="main">';
+  $html_negate .= '<center><h1><i class="fa fa-warning"></i>Usted no tiene permisos para ver esta sessión!</h1></center></div>';
+  echo $html_negate;
+}
+}
 
+?>

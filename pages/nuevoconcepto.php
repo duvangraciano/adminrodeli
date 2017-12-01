@@ -1,4 +1,10 @@
-<?php  
+<?php
+if (session_status() != PHP_SESSION_NONE) {
+if (isset($pu['agregar_editar_concepto_almacen'])) {
+  
+$get_all = $misc->get_all('tbl_roles');
+$_rol = ($get_all['bool']?$get_all['data']:array());
+
 //$lc = $misc->listarConceptos();
 $arrCategoria = $misc->listarCategorias()->fetchAll(PDO::FETCH_ASSOC); // json_decode para Objetos se denife True, para Arreglos simples False.
 $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
@@ -24,8 +30,6 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('acabados')
           </div>
           <div class="x_content">
             <form id="formnuevoconcepto" data-parsley-validate class="form-vertical form-label-left">
-              <h4></h4>
-              <div class="ln_solid"></div>
 
               <div class="row">
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
@@ -64,7 +68,7 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('acabados')
                   <label class="control-label" for="mate_diametro">Diámetro </label>
                   <input type="text" id="mate_diametro" name="mate_diametro" class="form-control" placeholder="DIAMETRO" title="Diámetro">
                 </div>
-                <div class="form-group col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="mate_acabado">Acabado </label>
                   <select class="form-control" id="mate_acabado" name="mate_acabado" data-placeholder="COLOR" tabindex="-1" style="width: 100%" title="Acabado" required>
                   <option></option>
@@ -80,6 +84,14 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('acabados')
                     <?php foreach ($arrFabricantes as $val) {
                             echo '<option value="'.$val['oid'].'">'.strtoupper($val['fab_descripcion']).'</option>';
                     } ?>
+                  </select>
+                </div>
+                <div class="form-group col-md-3 col-sm-3 col-xs-12">
+                  <label class="control-label" for="mate_clasificacion">Clasificación </label>
+                  <select class="form-control" id="mate_clasificacion" name="mate_clasificacion" tabindex="-1" style="width: 100%" title="Clasificación" data-placeholder="CLASIFICACIÓN">
+                  <option></option>
+                  <option value="ARTICULO">Artículo</option>
+                  <option value="SERVICIO">Servicio</option>
                   </select>
                 </div>
               </div> 
@@ -172,10 +184,6 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('acabados')
 <!-- /footer content -->
 
   <div id="reloadscript"></div>
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
   <!-- FastClick -->
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
   <!-- NProgress -->
@@ -202,17 +210,12 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('acabados')
   <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
   <!-- DateJS -->
   <script src="../plugins/DateJS/build/date.js"></script>
-  <!-- JQVMap -->
-  <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-  <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-  <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+
 
   <!-- bootstrap-daterangepicker -->
   <script src="../plugins/moment/moment.min.js"></script>
   <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-  <!-- Custom Theme Scripts -->
-  <script src="../plugins/build/js/custom.min.js"></script>
 
   <!-- bootstrap-wysiwyg -->
   <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
@@ -257,7 +260,7 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('acabados')
 
     form["btnguardar"].onclick = function() {  guardar();  };
     form["btnclean"].onclick = function() { window.location.href = url; };
-    window.onload = function() { setInputs(); };
+    setInputs();
 
 
     function setInputs() {
@@ -455,3 +458,12 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('acabados')
 
 
 
+<?php 
+}else{
+  $html_negate =  '<div style="padding: 100px 0px 50px 0px;" class="right_col" role="main">';
+  $html_negate .= '<center><h1><i class="fa fa-warning"></i>Usted no tiene permisos para ver esta sessión!</h1></center></div>';
+  echo $html_negate;
+}
+}
+
+?>

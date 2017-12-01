@@ -1,4 +1,8 @@
-<?php  
+<?php 
+
+if (session_status() != PHP_SESSION_NONE) {
+if (isset($pu['agregar_editar_empleado'])) {
+  
 $arrCategoria = $misc->listarCategorias()->fetchAll(PDO::FETCH_ASSOC); // json_decode para Objetos se denife True, para Arreglos simples False.
 $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
 
@@ -202,10 +206,7 @@ if (isset($_GET['query'])) {
 <!-- /footer content -->
 
   <div id="reloadscript"></div>
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+
   <!-- FastClick -->
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
   <!-- PNotify -->
@@ -237,8 +238,6 @@ if (isset($_GET['query'])) {
   <script src="../plugins/moment/moment.min.js"></script>
   <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-  <!-- Custom Theme Scripts -->
-  <script src="../plugins/build/js/custom.min.js"></script>
 
   <!-- bootstrap-wysiwyg -->
   <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
@@ -501,5 +500,13 @@ if (isset($_GET['query'])) {
 
 
 
+<?php 
+}else{
+  $html_negate =  '<div style="padding: 100px 0px 50px 0px;" class="right_col" role="main">';
+  $html_negate .= '<center><h1><i class="fa fa-warning"></i>Usted no tiene permisos para ver esta sessión!</h1></center></div>';
+  echo $html_negate;
+}
+}
 
+?>
 

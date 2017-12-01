@@ -1,5 +1,11 @@
 <?php  
 
+if (session_status() != PHP_SESSION_NONE) {
+if (isset($pu['ver_conceptos_almacen'])) {
+  
+$get_all = $misc->get_all('tbl_roles');
+$_rol = ($get_all['bool']?$get_all['data']:array());
+
 $conceptosAlma = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
 
 
@@ -68,10 +74,7 @@ $conceptosAlma = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
       </div>
     </div>
   <div id="reloadscript"></div>
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+
   <!-- FastClick -->
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
   <!-- NProgress -->
@@ -98,10 +101,7 @@ $conceptosAlma = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
   <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
   <!-- DateJS -->
   <script src="../plugins/DateJS/build/date.js"></script>
-  <!-- JQVMap -->
-  <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-  <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-  <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+
 
   <!-- bootstrap-daterangepicker -->
   <script src="../plugins/moment/moment.min.js"></script>
@@ -169,6 +169,14 @@ $conceptosAlma = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
   </script>
 
 
+<?php 
+}else{
+  $html_negate =  '<div style="padding: 100px 0px 50px 0px;" class="right_col" role="main">';
+  $html_negate .= '<center><h1><i class="fa fa-warning"></i>Usted no tiene permisos para ver esta sessión!</h1></center></div>';
+  echo $html_negate;
+}
+}
 
+?>
 
 

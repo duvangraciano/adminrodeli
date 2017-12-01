@@ -1,6 +1,10 @@
 <?php  
 
-$conceptosAlma = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
+if (session_status() != PHP_SESSION_NONE) {
+if (isset($pu['ver_entrada_almacen'])) {
+  
+$get_all = $misc->get_all('tbl_entradaalmacen');
+$_ent = ($get_all['bool']?$get_all['data']:array());
 
 
 
@@ -26,9 +30,10 @@ $conceptosAlma = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
                       <tr>
                         <th>Fecha</th>
                         <th>Consecutivo </th>
-                        <th style="width: 60%;">Descripción </th>
+                        <th>Proveedor </th>
                         <th>Documento </th>
                         <th>N°_Docum </th>
+                        <th>Fecha_Docum </th>
                         <th>Subtotal </th>
                         <th>Costo_IVA </th>
                         <th>Total </th>
@@ -39,14 +44,19 @@ $conceptosAlma = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
                     <tbody id="tbody">
                       <?php  
 
-                        foreach ($conceptosAlma as $value) {
-                          $echo = '
+                        foreach ($_ent as $value) {
+                          echo  '
                                   <tr class="even pointer">
-                                    <td class="a-center ">'.$value['oid'].'</td>
-                                    <td>'.$value['mate_referencia'].'</td>
-                                    <td>'.mb_strtoupper($value['mate_descripcion'],'utf-8').' <small>'.mb_strtolower($value['mate_observaciones'],'utf-8').'</small></td>
-                                    <td>'.$misc->getTipomaterial('oid',$value['mate_tipomaterial_oid'],'tpma_descripcion').'</td>
-                                    <td><a href="?mod=almacen&sub=nuevoconcepto&view='.base64_encode(json_encode($value)).'" class="btn btn-default btn-xs"><i class="fa fa-eye"></i> ver</a></td>
+                                    <td class="a-center ">'.$value['enal_datecreate'].'</td>
+                                    <td>'.$value['oid'].'</td>
+                                    <td>'.mb_strtoupper($misc->get_one('tbl_proveedores',null,'prov_identificacion',$value['enal_id_tercero'])['data']['prov_nombre'],'utf-8').'</td>
+                                    <td>'.$value['enal_tipo_documento'].'</td>
+                                    <td>'.$value['enal_num_documento'].'</td>
+                                    <td>'.$value['enal_date_documento'].'</td>
+                                    <td>'.$value['enal_subtotal'].'</td>
+                                    <td>'.$value['enal_iva'].'</td>
+                                    <td>'.$value['enal_total'].'</td>
+                                    <td><a href="?mod=almacen&sub=nuevaentrada&view='.base64_encode(json_encode($value)).'" class="btn btn-default btn-xs"><i class="fa fa-eye"></i> ver</a></td>
                                   </tr>
                           ';
                         }
@@ -173,6 +183,14 @@ $conceptosAlma = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
   </script>
 
 
+<?php 
+}else{
+  $html_negate =  '<div style="padding: 100px 0px 50px 0px;" class="right_col" role="main">';
+  $html_negate .= '<center><h1><i class="fa fa-warning"></i>Usted no tiene permisos para ver esta sessión!</h1></center></div>';
+  echo $html_negate;
+}
+}
 
+?>
 
 

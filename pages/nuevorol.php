@@ -167,7 +167,7 @@ $_mod = ($get_all['bool']?$get_all['data']:array());
     var get_oid;
     form["btnguardar"].onclick = function(){ guardar(); }
     form["btnclean"].onclick = function() { window.location.href = url; };
-    window.onload = function(){ load_data(); }
+    load_data();
     
     function validarItem(arrValues) {
       var bool = true;

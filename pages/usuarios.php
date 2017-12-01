@@ -99,12 +99,7 @@ $_usu = ($get_all['bool']?$get_all['data']:array());
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
   <!-- NProgress -->
   <script src="../plugins/nprogress/nprogress.js"></script>
-  <!-- Chart.js -->
-  <script src="../plugins/Chart.js/dist/Chart.min.js"></script>
-  <!-- gauge.js -->
-  <script src="../plugins/gauge.js/dist/gauge.min.js"></script>
-  <!-- bootstrap-progressbar -->
-  <script src="../plugins/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+
   <!-- iCheck -->
   <script src="../plugins/iCheck/icheck.min.js"></script>
   <!-- Skycons -->

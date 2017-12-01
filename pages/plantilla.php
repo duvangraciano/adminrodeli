@@ -27,10 +27,7 @@
       </div>
     </div>
 
-    <!-- jQuery -->
-    <script src="../plugins/jquery/dist/jquery.min.js"></script>
-    <!-- Bootstrap -->
-    <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+
     <!-- FastClick -->
     <script src="../plugins/fastclick/lib/fastclick.js"></script>
     <!-- NProgress -->
@@ -66,8 +63,7 @@
     <script src="../plugins/moment/moment.min.js"></script>
     <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-    <!-- Custom Theme Scripts -->
-    <script src="../plugins/build/js/custom.min.js"></script>
+
 
     <!-- Flot -->
     <script>
