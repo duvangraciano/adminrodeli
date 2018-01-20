@@ -36,6 +36,7 @@ $FSP = floatval($array_pn['fsptrabajador'])/100;
 // ***********************
 
 if ( isset( $_POST['type_xhr'] ) ) {
+	
 	if ( $_POST['type_xhr'] == 'get_result_one' ) {
 		$key_return = ($_POST['key_return']=='null'?NULL:$_POST['key_return']);
 		$get_one = $misc->get_one($_POST['table'],$key_return,$_POST['key'],$_POST['value']);
@@ -55,7 +56,7 @@ if ( isset( $_POST['type_xhr'] ) ) {
 		$_getone = ($get_one['bool']?$get_one['data']:array());
 		
 		if ( $get_one['bool'] ) {
-			echo '{"data":'.json_encode($_getone).',"mensaje":"'.$get_one['mensaje'].'","bool":true}';
+			echo '{"data":'.json_encode($_getone).',"mensaje":"'.$get_one['mensaje'].'","query":"'.$get_one['query'].'","bool":true}';
 		}else{
 			echo '{"mensaje":'.$get_one['mensaje'].',"bool":false}';
 		}
@@ -86,6 +87,19 @@ if ( isset( $_POST['type_xhr'] ) ) {
 			echo '{"mensaje":"'.$get_one['mensaje'].'","bool":false}';
 		}
 	
+	}
+	
+	if ( $_POST['type_xhr'] == 'get_func' ) {
+		$fn = $_POST['fn'];
+		$post = $_POST['val'];
+		$get_one = $misc->$fn($post)->fetchAll(PDO::FETCH_ASSOC);
+
+		if ( is_array($get_one) ) {
+			echo '{"data":'.json_encode($get_one).',"bool":true}';
+		}else{
+			echo '{"bool":false}';
+		}
+		
 	}
 }	
 
@@ -385,40 +399,5 @@ if ($_POST['data'] == 'parametrosnomina') {
 }
 
 
-function cuadrado($ancho,$alto,$type,$factor)
-{
-	if ($type == 'a') {
-		return ceil((($ancho-0.2)*2)+2);
-	}elseif ($type == 'b') {
-		return ceil((($ancho-0.2)*2)+2)-($ancho-0.2);
-	}elseif ($type == 'c') {
-		return ($ancho-0.2)+1;
-	}elseif ($type == 'd') {
-		return (($ancho-0.2)*2)+1 ;
-	}elseif ($type == 'e') {
-		return (($ancho-0.2)*2)+1.5 ;
-	}elseif ($type == 'f') {
-		return (($ancho-0.2)*2)+2 ;
-	}elseif ($type == 'g') {
-		return (($ancho-0.2)*2)+2.2 ;
-	}elseif ($type == 'h') {
-		return (($ancho-0.2)*2) ;
-	}elseif ($type == 'i') {
-		return ($ancho-0.2) ;
-	}elseif ($type == 'j') {
-		return null ;
-	}elseif ($type == 'k') {
-		return ($alto-0.18)*2 ;
-	}elseif ($type == 'l') {
-		return (($ancho-0.2)*2)+2.5 ;
-	}elseif ($type == 'm') {
-		return null ;
-	}elseif ($type == 'n') {
-		return null ;
-	}else{
-		return $factor;
-	}
-	
-}
 
 ?>

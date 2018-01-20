@@ -107,9 +107,6 @@ $conceptosAlma = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
   <script src="../plugins/moment/moment.min.js"></script>
   <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-  <!-- Custom Theme Scripts -->
-  <script src="../plugins/build/js/custom.min.js"></script>
-
   <!-- bootstrap-wysiwyg -->
   <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
   <script src="../plugins/jquery.hotkeys/jquery.hotkeys.js"></script>

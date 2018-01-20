@@ -157,6 +157,10 @@ $pu = unserialize($misc->get_one('tbl_roles','rol_modulos','oid',$user['usu_rol_
           <?php 
           $sub = (isset($_GET['sub'])? $_GET['sub'] : '');
           switch ($sub) {
+            case 'facturas':
+              include_once '../pages/facturas.php' ;
+              break;
+              
             case 'nuevaventa':
               include_once '../pages/nuevaventa.php' ;
               break;
@@ -215,6 +219,10 @@ $pu = unserialize($misc->get_one('tbl_roles','rol_modulos','oid',$user['usu_rol_
 
             case 'cotizador':
               include_once '../pages/cotizador.php' ;
+              break;
+            
+            case 'cotizadordetallado':
+              include_once '../pages/cotizadordetallado.php' ;
               break;
 
             case 'nuevaentrada':

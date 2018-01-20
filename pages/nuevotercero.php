@@ -3,10 +3,8 @@
 if (session_status() != PHP_SESSION_NONE) {
 if (isset($pu['agregar_editar_cliente'])) {
   
-//$lc = $misc->listarConceptos();
-$arrCategoria = $misc->listarCategorias()->fetchAll(PDO::FETCH_ASSOC); // json_decode para Objetos se denife True, para Arreglos simples False.
-$arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
 
+$listaTipoId = $misc->listartipoid()->fetchAll(PDO::FETCH_ASSOC);
 
 
 
@@ -29,16 +27,23 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
               <div class="row">
                 <div class="form-group col-md-3 col-sm-3 col-xs-12">
                   <label class="control-label" for="pro_nombre_responsable">Identificación del tercero </label>
-                  <input type="text" id="prov_identificacion" name="prov_identificacion" required="required" class="form-control" placeholder="NIT/CC/NUIP">
+                  <input type="text" id="prov_identificacion" name="prov_identificacion" required="required" class="form-control" title="Identificación del tercero" placeholder="NIT/CC/NUIP">
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <label class="control-label" for="prov_tipoid">Tipo identificación </label>
-                  <select class="form-control" id="prov_tipoid" name="prov_tipoid" required="required" tabindex="-1" style="width: 100%">
+                  <label class="control-label" for="prov_tipoidentificacion_oid">Tipo identificación </label>
+                  <select class="form-control" id="prov_tipoidentificacion_oid" name="prov_tipoidentificacion_oid" required="required" data-placeholder="SELECCIONE" title="Tipo identificación" tabindex="-1" style="width: 100%">
+                    <option></option>
+                    <?php
+                      foreach ($listaTipoId as $val) {
+                        echo '<option value="'.$val["oid"].'">'.$val["tpid_descripcion"].' - '.$val["tpid_observacion"].'</option>';
+                      }
+                    
+                    ?>
                   </select>
                 </div>
                 <div class="form-group col-md-7 col-sm-7 col-xs-12">
                   <label class="control-label" for="prov_nombre">Nombre del tercero </label>
-                  <input type="text" id="prov_nombre" name="prov_nombre" required="required" class="form-control" placeholder="NOMBRE PERSONA NATURAL O JURIDICA">
+                  <input type="text" id="prov_nombre" name="prov_nombre" required="required" class="form-control" title="Nombre del tercero" placeholder="NOMBRE PERSONA NATURAL O JURIDICA">
                 </div>                
               </div>
 
@@ -49,7 +54,7 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <div class="form-group col-md-3 col-sm-3 col-xs-12">
                   <label class="control-label" for="prov_ciudad">Departamento/Ciudad </label>
-                  <select class="form-control" id="prov_ciudad" name="prov_ciudad" required="required" tabindex="-1" style="width: 100%">
+                  <select class="form-control" id="prov_ciudad" name="prov_ciudad" required="required" data-placeholder="SELECCIONE" tabindex="-1" style="width: 100%">
                   </select>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
@@ -64,8 +69,8 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
 
               <div class="row">
                 <div class="form-group col-md-4 col-sm-4 col-xs-12">
-                  <label class="control-label" for="prov_nombre_responsable">Contacto/Responsable </label>
-                  <input type="text" id="prov_nombre_responsable" name="prov_nombre_responsable" required="required" class="form-control" placeholder="NOMBRE DEL CONTACTO O RESPONSABLE">
+                  <label class="control-label" for="prov_contacto">Contacto/Responsable </label>
+                  <input type="text" id="prov_contacto" name="prov_contacto" required="required" class="form-control" title="Contacto/Responsable" placeholder="NOMBRE DEL CONTACTO O RESPONSABLE">
                 </div>
                 <div class="form-group col-md-4 col-sm-4 col-xs-12">
                   <label class="control-label" for="prov_email">Correo electronico </label>
@@ -78,23 +83,32 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
 
               <div class="row">
                 <div class="form-group col-md-3 col-sm-3 col-xs-12">
-                  <label class="control-label" for="prov_naturaleza">Naturaleza tributaria </label>
-                  <select class="form-control" id="prov_naturaleza" name="prov_naturaleza" required="required" tabindex="-1" style="width: 100%">
+                  <label class="control-label" for="prov_natu_tributaria">Naturaleza tributaria </label>
+                  <select class="form-control" id="prov_natu_tributaria" name="prov_natu_tributaria" required="required" data-placeholder="SELECCIONE" title="Naturaleza tributaria" tabindex="-1" style="width: 100%">
                   </select>
                 </div>
+                <div class="form-group col-md-3 col-sm-3 col-xs-12 col-md-offset-1">
+                  <label class="control-label" for="modalidad">Modalidad </label>
+                  <div class="checkbox">
+                      <label>
+                        <input id="modalidad" name="prov_escliente" type="checkbox" value="1" class="flat"> Cliente
+                        <input id="modalidad" name="prov_esproveedor" type="checkbox" value="1" class="flat"> Proveedor
+                      </label>
+                  </div>
+                </div>
               </div>
 
               <div class="row">
                 <div class="form-group col-md-12 col-sm-12 col-xs-12">
-                  <label class="control-label" for="prov_naturaleza">Observaciones </label>
-                  <textarea id="prov_email" name="prov_observaciones" required="required" class="form-control" placeholder=""></textarea>
+                  <label class="control-label" for="prov_descripcion">Observaciones </label>
+                  <textarea id="prov_descripcion" name="prov_descripcion" required="required" class="form-control" placeholder=""></textarea>
                 </div>
               </div>
 
 
               <div class="row">
                 <div class="form-group col-md-12 col-sm-12 col-xs-12">
-                  <button id="btnguardar" type="button" class="btn btn-success pull-right"><i class="fa fa-save"></i> Guardar</button>
+                  <button id="btnguardar" type="button" onclick="guardar()" class="btn btn-success pull-right"><i class="fa fa-save"></i> Guardar</button>
                   <button id="btnclean" type="button" class="btn btn-default pull-right"><i class="fa fa-eraser"></i> Limpiar</button>
 
                 </div>
@@ -118,14 +132,10 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
 
   <!-- FastClick -->
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
-  <!-- NProgress -->
-  <script src="../plugins/nprogress/nprogress.js"></script>
-  <!-- Chart.js -->
-  <script src="../plugins/Chart.js/dist/Chart.min.js"></script>
-  <!-- gauge.js -->
-  <script src="../plugins/gauge.js/dist/gauge.min.js"></script>
-  <!-- bootstrap-progressbar -->
-  <script src="../plugins/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+  <!-- PNotify -->
+  <script src="../plugins/pnotify/dist/pnotify.js"></script>
+  <script src="../plugins/pnotify/dist/pnotify.buttons.js"></script>
+  <script src="../plugins/pnotify/dist/pnotify.nonblock.js"></script>
   <!-- iCheck -->
   <script src="../plugins/iCheck/icheck.min.js"></script>
   <!-- Skycons -->
@@ -190,104 +200,108 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
   <script>
     document.title = document.title+" Crear nuevo tercero"; //set Titulo de la pagina
     var form = document.getElementById("formtercero"); //Get selector categor
-
-
+    var url = "?mod=produccion&sub=tercero";
+    var get_oid = null;
     
-    var indentificacion = document.getElementById("prov_identificacion");
+
+    form["prov_identificacion"].onblur = function(){ verificarDuplicados(this,"tbl_proveedores","prov_identificacion"); };
+    
     form["btnclean"].onclick = function(){ window.location.reload(true); };
-    //document.getElementById("btnguardar").onclick = function(){ guardarOrden() };
-
-
-    function iniciar() {
-      form["prov_tipoid"].innerHTML = listarTipoId();
-      form["prov_ciudad"].innerHTML = listarCiudades();
-      form["prov_naturaleza"].innerHTML = listarNaturaleza();
-    }
 
 
 
-    function listarTipoId() {
-      var lista = <?php echo json_encode($misc->listartipoid()->fetchAll(PDO::FETCH_ASSOC), false);  ?>;
-      var options = '<option></option>';
-      for(var l in lista){
-        options += '<option value="'+lista[l]["oid"]+'">'+lista[l]["tpid_descripcion"]+' - '+lista[l]["tpid_observacion"]+'</option>';
-      }
-      return options;
-      
-    }
-
+    listarCiudades();
     function listarCiudades() {
-      var obj = <?php echo json_encode($misc->consultaDesplegables('ciudades')->fetch(PDO::FETCH_ASSOC), false);  ?>;
-      var lista = JSON.parse(atob(obj["des_data"]));
+      
+      var arr = send_xhr(null,{val:"ciudades",fn:"consultaDesplegables",type_xhr:"get_func"});
+
+      var lista = JSON.parse(atob(arr["data"][0]["des_data"]));
       var options = '<option></option>';
       for(var l in lista){
-        options += '<option value="'+lista[l]["oid"]+'">'+lista[l]["departamento"]+'/'+lista[l]["ciudad"]+'</option>';
+        var ciudad = lista[l]["departamento"]+'/'+lista[l]["ciudad"];
+        options += '<option value="'+lista[l]["oid"]+'">'+ciudad+'</option>';
       }
-      return options;
+      
+      form["prov_ciudad"].innerHTML = options;
       
     }
 
+    listarNaturaleza();
     function listarNaturaleza() {
-      var obj = <?php echo json_encode($misc->consultaDesplegables('Naturaleza')->fetch(PDO::FETCH_ASSOC), false);  ?>;
-      var lista = JSON.parse(atob(obj["des_data"]));
+      
+      var arr = send_xhr(null,{val:"naturaleza",fn:"consultaDesplegables",type_xhr:"get_func"});
+
+      var lista = JSON.parse(atob(arr["data"][0]["des_data"]));
       var options = '<option></option>';
       for(var l in lista){
-        options += '<option value="'+lista[l]["oid"]+'">'+lista[l]["descripcion"]+'</option>';
+        options += '<option value="'+lista[l]["descripcion"]+'">'+lista[l]["descripcion"]+'</option>';
       }
-      return options;
+      form["prov_natu_tributaria"].innerHTML = options;
       
     }
 
-
-    function setConcepto() { //Carga el selector de conceptos
-      
-      var html = '<option></option>';
-      for (var i = 0; i < arrConceptos.length; i++) {
-        if (arrConceptos[i]["com_categoria"] == categoria.options[categoria.selectedIndex].value) {
-          html += '<option data-toggle="tooltip" title="'+arrConceptos[i]['com_descripcion']+'" value="'+arrConceptos[i]['oid']+'">'+arrConceptos[i]['com_codigo'].toUpperCase()+' - '+arrConceptos[i]['com_descripcion'].toUpperCase()+'</option>';          
-        }
-      }
-
-      document.getElementById("conceptos").innerHTML = html;
-      
-    }
-
-    // Función que realiza una busqueda por numero de indentificacion del proveedor y/o tercero.
-    indentificacion.onblur = function(){  
-      if (/^\s+/g.test(indentificacion.value) != true) { 
-        if (indentificacion.value != "") {
-          var xhr = new XMLHttpRequest();
-          var formData = new FormData();
-
-          formData.append("prov_identificacion", indentificacion.value);
-          formData.append("data", "consultarproveedor");
+    // Función que realiza 
+    function verificarDuplicados(fm,table,key,value) {
+      var value = fm.value;
+      if(value !== ""){
+        if (/^\s+$|\W/g.test(value) !== true) {
           
-          xhr.open("POST", "../data/data.php",false);
-          xhr.send(formData);
-
-          if (xhr.status == 200) {
-            var result = JSON.parse(xhr.responseText);
-            if (result["bool"] && result["data"] != false) {
-              
-              form["prov_nombre"].value = result["data"]["prov_nombre"];
-              form["pro_nombre_responsable"].value = result["data"]["prov_otrosdatos"];
-              //window.location.reload(true);
-            }else{
-              alert("Atención!\n\nNo existe ningun tercero con esa Identificación. Compruebe de nuevo.\nDe lo contrario registrelo.");
-              form["prov_nombre"].value = "";
-              form["pro_nombre_responsable"].value = "";
-              form["prov_identificacion"].value = "";
-            }
-
-          } else {
-            alert('No se enviaron datos!');
+          var arr = send_xhr(null,{type_xhr:"get_result_one",table:table,key:key,value:value,key_return:null});
+          
+          if(arr["data"]){
+            notify('Advertencia!','El '+fm.title+' ya se encuentra registrado.\nVerifique de nuevo.','warning');
+            fm.value = "";
+            fm.focus();
           }
-        }
-      }else{
-        alert("Atención!\n\nEl Campo Identificación no es válido, compruebe de nuevo.");
-        indentificacion.value = "";
+        }else{
+          notify('Advertencia!','El campo '+fm.title+' contiene carácteres inválidos.\nSolo se permiten números.','warning');
+          fm.value = "";
+          fm.focus();
+        }        
       }
-    };
+    }
+    
+    function guardar(){
+      
+      if ( validarform() && validarmodalidad() ) {
+        var arr = send_xhr(form,{type_xhr:"set_form",fn:"guardarnuevotercero"});
+        
+        if (arr["bool"]) {
+          notify('Mensaje!','La operación fue realizada satisfactoriamente.','success');
+          window.location.href = url;
+        }else{
+          notify('Error!',arr["mensaje"],'error');
+        }
+      }
+      
+    }
+    
+    function actualizar(){
+      
+      if ( validarform() && validarmodalidad() ) {
+        var arr = send_xhr(form,{oid:get_oid,type_xhr:"set_form_update",fn:"actualizartercero"});
+        
+        if (arr["bool"]) {
+          notify('Mensaje!','La operación fue realizada satisfactoriamente.','success');
+          window.location.href = url;
+        }else{
+          notify('Error!',arr["mensaje"],'error');
+        }
+      }
+      
+    }
+    
+   
+    function validarmodalidad(){
+      var mod = form["modalidad"];
+      console.log(mod[1]);
+      if(mod[0].checked || mod[1].checked){
+        return true;
+      }else{
+        notify('Advertencia!','Debe definir la Modalidad del Tercero.','warning');
+        return false;
+      }
+    }
 
     function clearField(excluir, form){
       var arrElementos = document.getElementById(form);
@@ -306,153 +320,123 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
       $("#categoria").select2().val(null).trigger('change');
     }
 
-    function addItemTable(){
-      
-      var categoria =  document.getElementById("categoria");
-      var concepto = document.getElementById("conceptos");
-      var item = (concepto.value != '' ? concepto.options[concepto.selectedIndex].text : null);
-      var oid = (concepto.value != '' ? concepto.options[concepto.selectedIndex].value : null);
-      var codigo = (concepto.value != '' ? item.split("-") : []);
-      var cantidad = form["cantidad"].value;
-      var ancho = (form["ancho"].value == "" ? null : form["ancho"].value );
-      var alto = (form["alto"].value == "" ? null : form["alto"].value );
-      var observacion = form["observacion"].value;
 
-      if ( validarItem(categoria, concepto, cantidad, ancho, alto) ) {
-      
-        globalArrOrdPro.push({oid:oid, cantidad:cantidad, codigo:codigo[0], item:codigo[1], ancho:ancho, alto:alto, observacion:observacion});           
 
-        funcionListarTabla();
+    function send_xhr(formElement,arrElement){
+      
+      
+      var formData = (!formElement? new FormData() : new FormData(formElement) );
+      for(var i in arrElement){
+        formData.append(i, arrElement[i]);
+      }
+      
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "../data/data.php",false);
+      xhr.send(formData);
+      
+      if (xhr.status == 200) {
         
-
-        limpiarCampos(excluirCampos = ["prov_identificacion","prov_nombre","pro_nombre_responsable"],"formordenproduccion");
-      }
-
-    }
-
-    function guardarOrden(){
-      var prov_identificacion = document.getElementById("prov_identificacion").value;
-      var pro_nombre_responsable = document.getElementById("pro_nombre_responsable").value;
-
-      if (prov_identificacion != '' && pro_nombre_responsable != '') {
-        if (globalArrOrdPro.length > 0) {
-          
-          var xhr = new XMLHttpRequest();
-          var formData = new FormData();
-
-          formData.append("globalArrOrdPro", JSON.stringify(globalArrOrdPro));
-          formData.append("prov_nombre_responsable", pro_nombre_responsable);
-          formData.append("prov_identificacion", prov_identificacion);
-          formData.append("data", "guardarorden");
-          
-          xhr.open("POST", "../data/data.php",false);
-          xhr.send(formData);
-
-          if (xhr.status == 200) {
-            /*
-            var result = JSON.parse(xhr.responseText);
-            if (result["bool"]) {
-              alert(result["mensaje"]);
-              window.location.reload(true);
-            }else{
-              alert(result["mensaje"]);
-            }
-            */
-          } else {
-            alert('No se enviaron datos!');
-          }
+        var result = JSON.parse(xhr.responseText);
+        
+        if (result["bool"]) {
+          return {bool:true,mensaje:result["mensaje"],data:result["data"],result:result};
         }else{
-          alert("No hay ningun concepto en la orden.");
+          return {bool:false,mensaje:result["mensaje"]};
+          notify('Error!',result["mensaje"],'error');
         }
-      }else{
-        alert("Campo Identificación o Nombre Responsable están vacios.");
+        
+      } else {
+        return {bool:false};
+        notify('Error!','No se enviaron datos!','error');
+      }
+      
+    }
+
+    load_data();
+    function load_data(){
+      var url_string = window.location.href;
+      var url = new URL(url_string);
+      var _get = url.searchParams.get("oid");
+           
+      if (_get !== "") {
+        get_oid = _get;
+        var data = send_xhr(null,{type_xhr:"get_result_one",table:"tbl_proveedores",key:"oid",value:_get,key_return:null});
+        if(data["bool"] && data["data"]){
+          var d = data["data"];
+          for(var i in d){
+            
+            if (form[i]) {
+              if ( (i === "prov_escliente" || i === "prov_esproveedor") && d[i] == 1) {
+                $("#"+i).iCheck("check");
+                form[i].checked = true;               
+              }else if(form[i].tagName === "SELECT"){
+                $("#"+i).select2().val(d[i]).trigger("select2:change")
+              }else if(i === form[i].name){
+                form[i].value = d[i];
+              }              
+            }
+          }
+          
+          form["btnguardar"].setAttribute("onclick","actualizar()");
+          form["btnguardar"].removeAttribute("id");
+          form["prov_identificacion"].setAttribute("disabled","disabled");
+          form["prov_esproveedor"].value = 1;
+          form["prov_escliente"].value = 1;
+        }
       }
     }
 
-    function funcionListarTabla() {
-
-      var html = '';
-
-        for (var i = 0; i < globalArrOrdPro.length; i++) {
-   
-          html += '<tr class="even pointer">';
-          html += '<td class="a-center "><input type="checkbox" class="flat" name="table_records"></td>';
-          html += '<td class="a-right a-right ">'+globalArrOrdPro[i]['cantidad']+'</td>';
-          html += '<td class=" ">'+globalArrOrdPro[i]['codigo']+'</td>';
-          html += '<td class=" ">'+globalArrOrdPro[i]['item']+' <small><code>'+globalArrOrdPro[i]['observacion']+'</code></small></td>';
-          html += '<td class=" ">'+globalArrOrdPro[i]['ancho']+':'+globalArrOrdPro[i]['alto']+'</td>';
-          html += '</tr>';
-          
-        }
-          document.getElementById("tbody").innerHTML = html;
+    function notify(titulo,texto,tipo) {
+      new PNotify({
+          title: titulo,
+          text: texto,
+          type: tipo, // warning, success, error, info
+          styling: 'bootstrap3'
+      });
     }
-
-    function validarItem(categoria, concepto, cantidad, ancho, alto) {
+    
+    function validarform() {
+      
+      var c = 0; var nc = countInputs();
+      for (var i = 0; i < form.length; i++) {
+        if (form[i].attributes["title"]) {
           
-      if (categoria.value != "" && concepto.value != "" && cantidad.value != "") {
-        for (var i = 0; i < arrConceptos.length; i++) {
-          if (parseInt(arrConceptos[i]["oid"]) == parseInt(concepto.value)) {
-            
-            if (arrConceptos[i]["com_esmedible"] == 1) {
-              if (ancho.value != '' && alto.value != "") {
+          if (/^\s+/g.test(form[i].value) === true) {
+            //alert("El campo "+form[i].title+" contiene carácteres inválidos!");
+            notify('Advertencia!','El campo '+form[i].title+' contiene carácteres inválidos!','warning');
+            return false;
+            break;
+          }else{
+            if (form[i].value != ""){
+              c++;
+              if (c >= nc) {
                 return true;
-              }else{
-                alert("Los campos Ancho y Alto son obligatorios!");
-                return false;
+                break;
               }
             }else{
-              return true;
+              //alert("El campo "+form[i].title+" no puede estar vacio!");
+              notify('Advertencia!','El campo '+form[i].title+' no puede estar vacio!','warning');
+              return false;
+              break;
             }
-                  
           }
+
         }
-      }else{
-        alert("Mensaje de validación!");
-        return false;
       }
     }
-
-    function removeritem(){
-      var arrTbody = document.getElementById("tablaitems");
-      var items = arrTbody.getElementsByTagName('input');
-
-      var index = [];
-
-      for (var i = 1; i < items.length; i++) {        
-        if (items[i].type === "checkbox") {
-          if (items[i].checked === false) {
-            index.push(globalArrOrdPro[i-1]);
-          }
-        }   
+    
+    function countInputs(){
+      var c = 0;
+      for (var i = 0; i < form.length; i++) {
+        if (form[i].attributes["title"]) {
+          c++;
+        }
       }
-
-      globalArrOrdPro = index;
-      funcionListarTabla();
+      return c;
     }
-
-
-
-
-    $(document).ready(function() {
-
-      //var t = $('#tablaitems').dataTable();
-
-      $tablaitems = $('#tablaitems');
-
-      $tablaitems.dataTable({
-        searching: false,
-        responsive: true,
-        paging:   false,
-        ordering: false,
-        dom: '<"toolbar">frtip'
-      });
-      
-
-      $("div.toolbar").html('<button onclick="removeritem()" type="button" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Remover item</button>');
-
-    });
+    
   </script>
-  <!-- /bootstrap-daterangepicker -->
+
 
 
   <!-- Select2 -->
@@ -483,58 +467,6 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
   </script>
   <!-- /Select2 -->
 
-  <!-- Parsley -->
-  <script>
-    $(document).ready(function() {
-      $.listen('parsley:field:validate', function() {
-        validateFront();
-      });
-      $('#demo-form .btn').on('click', function() {
-        $('#demo-form').parsley().validate();
-        validateFront();
-      });
-      var validateFront = function() {
-        if (true === $('#demo-form').parsley().isValid()) {
-          $('.bs-callout-info').removeClass('hidden');
-          $('.bs-callout-warning').addClass('hidden');
-        } else {
-          $('.bs-callout-info').addClass('hidden');
-          $('.bs-callout-warning').removeClass('hidden');
-        }
-      };
-    });
-
-    $(document).ready(function() {
-      $.listen('parsley:field:validate', function() {
-        validateFront();
-      });
-      $('#demo-form2 .btn').on('click', function() {
-        $('#demo-form2').parsley().validate();
-        validateFront();
-      });
-      var validateFront = function() {
-        if (true === $('#demo-form2').parsley().isValid()) {
-          $('.bs-callout-info').removeClass('hidden');
-          $('.bs-callout-warning').addClass('hidden');
-        } else {
-          $('.bs-callout-info').addClass('hidden');
-          $('.bs-callout-warning').removeClass('hidden');
-        }
-      };
-    });
-    try {
-      hljs.initHighlightingOnLoad();
-    } catch (err) {}
-  </script>
-  <!-- /Parsley -->
-
-  <!-- Autosize -->
-  <script>
-    $(document).ready(function() {
-      autosize($('.resizable_textarea'));
-    });
-  </script>
-  <!-- /Autosize -->
 
 
 <?php 

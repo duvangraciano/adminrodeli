@@ -4,6 +4,7 @@ if (isset($pu['agregar_editar_concepto_almacen'])) {
   
 $get_all = $misc->get_all('tbl_roles');
 $_rol = ($get_all['bool']?$get_all['data']:array());
+$fac = unserialize($cfg['data']['conf_inventario']);
 
 //$lc = $misc->listarConceptos();
 $arrCategoria = $misc->listarCategorias()->fetchAll(PDO::FETCH_ASSOC); // json_decode para Objetos se denife True, para Arreglos simples False.
@@ -120,8 +121,8 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('acabados')
                   </select>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <label class="control-label" for="mate_costounidad">Costo medida unitaria </label>
-                  <input type="text" id="mate_costounidad" name="mate_costounidad" class="form-control" placeholder="COSTO UNIDAD" title="Costo medida unitaria" required>
+                  <label class="control-label" for="mate_costocompra">Costo compra </label>
+                  <input type="text" id="mate_costocompra" name="mate_costocompra" class="form-control" placeholder="COSTO COMPRA" title="Costo compra" required>
                 </div>
                 <div class="form-group col-md-1 col-sm-1 col-xs-12">
                   <label class="control-label" for="mate_iva">Aplica IVA: </label><br>
@@ -146,21 +147,49 @@ $arrAcabados = json_decode(base64_decode($misc->consultaDesplegables('acabados')
               
               <h4></h4>
               <div class="ln_solid"></div>
-              <div class="row hide">
+              <div class="row">
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <label class="control-label" for="">% Utilidad 1</label>
-                  <input type="text" id="" name="" class="form-control" placeholder="" title="">
+                  <label class="control-label" for="">$ Precio 1</label>
+                  <input type="number" id="" name="" class="form-control" placeholder="" title="" value="0">
+                  <label class="control-label small" for="">Incremento <?php echo (isset($fac['utilidad1'])? $fac['utilidad1']: 'NaN'); ?>%</label>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <label class="control-label" for="">% Utilidad 2</label>
-                  <input type="text" id="" name="" class="form-control" placeholder="" title="">
+                  <label class="control-label" for="">$ Precio 2</label>
+                  <input type="number" id="" name="" class="form-control" placeholder="" title="" value="0">
+                  <label class="control-label small" for="">Incremento <?php echo (isset($fac['utilidad2'])? $fac['utilidad2']: 'NaN'); ?>%</label>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <label class="control-label" for="">% Utilidad 3</label>
-                  <input type="text" id="" name="" class="form-control" placeholder="" title="">
+                  <label class="control-label" for="">$ Precio 3</label>
+                  <input type="number" id="" name="" class="form-control" placeholder="" title="" value="0">
+                  <label class="control-label small" for="">Incremento <?php echo (isset($fac['utilidad3'])? $fac['utilidad3']: 'NaN'); ?>%</label>
+                </div>
+                <div class="form-group col-md-2 col-sm-2 col-xs-12 col-md-offset-1">
+                  <label class="control-label" for="mate_existencias">Stock</label>
+                  <input type="number" id="mate_existencias" name="mate_existencias" class="form-control" placeholder="" title="" value="0">
+                </div>
+                <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                  <label class="control-label" for="mate_afectastok">Activar Stock?: </label><br>
+                  <label>
+                    SI <input id="mate_afectastok" name="mate_afectastok" value="1" type="checkbox" class="flat" />
+                  </label>                  
                 </div>
               </div>
-
+              
+              <div class="row">
+                <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                  <label class="control-label" for="">Costo promedio</label>
+                  <input type="number" id="mate_costounidad" name="mate_costounidad" class="form-control" placeholder="" title="" value="0">
+                </div>
+                <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                  <label class="control-label" for="mate_costoultimo">Costo último</label>
+                  <input type="number" id="mate_costoultimo" name="mate_costoultimo" class="form-control" placeholder="" title="" value="0">
+                </div>
+                <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                  <label class="control-label" for="mate_costomaximo">Costo máximo</label>
+                  <input type="number" id="mate_costomaximo" name="mate_costomaximo" class="form-control" placeholder="" title="" value="0">
+                </div>              
+              </div>
+              
               <div class="row">
                 <div class="form-group col-md-12 col-sm-12 col-xs-12">
                   <button id="btnguardar" type="button" class="btn btn-success pull-right"><i class="fa fa-save"></i> Guardar</button>

@@ -27,7 +27,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
               <div class="row">
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="enal_date_documento">Fecha documento </label>
-                  <input id="enal_date_documento" type="text" class="form-control" name="enal_date_documento" placeholder="DD-MM-YYYY" title="Fecha documento" required>
+                  <input id="enal_date_documento" type="text" class="form-control fecha" name="enal_date_documento" placeholder="DD-MM-YYYY" title="Fecha documento" required>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-md-offset-6 col-xs-12">
                   <label class="control-label" for="enal_tipo_documento">Tipo Documento </label>
@@ -50,7 +50,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
                   <div class="input-group">
                     <input type="text" id="enal_id_tercero" name="enal_id_tercero" class="form-control" placeholder="NIT/CC/NUIP" title="Identificador" required>
                     <span class="input-group-btn">
-                        <button id="addprov" type="button" class="btn btn-primary"><i class="fa fa-plus"></i></button>
+                        <a href="?mod=cotizaciones&sub=tercero" target="_Blank"  type="button" class="btn btn-primary"><i class="fa fa-plus"></i></a>
                     </span>
                   </div>                  
                 </div>
@@ -69,7 +69,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="">Total Factura </label>
-                  <input type="number" id="total_factura" min="1" name="enal_total" class="form-control"  placeholder="Total Factura" required>
+                  <input type="number" id="total_factura" min="1" name="enal_total" class="form-control" value="0"  placeholder="Total Factura" required>
                 </div>
               </div>
 
@@ -79,11 +79,11 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="">Total Descuentos</label>
-                  <input type="number" id="total_descuentos" min="1" name="enal_descuentos" class="form-control"  placeholder="Total Descuentos" required>
+                  <input type="number" id="total_descuentos" min="1" name="enal_descuentos" class="form-control" value="0" placeholder="Total Descuentos" required>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <label class="control-label" for="">Total Iva </label>
-                  <input type="number" id="total_iva" min="1" name="enal_iva" class="form-control"  placeholder="Total Iva">
+                  <input type="number" id="total_iva" min="1" name="enal_iva" class="form-control" value="0" placeholder="Total Iva">
                 </div>
               </div>              
               
@@ -92,7 +92,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
               <div class="row">
                 <div class="form-group col-md-4 col-sm-4 col-xs-12">
                   <label class="control-label" for="concepto">Producto/Concepto </label>
-                  <select class="form-control" id="concepto" name="" tabindex="-1" >
+                  <select class="form-control" id="concepto" name="" tabindex="-1" data-placeholder="SELECCIONAR">
                     <option></option>
                   </select>
                 </div>
@@ -258,6 +258,7 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
     var form = document.getElementById("formnuevaentrada");
     var tercero = document.getElementById("enal_id_tercero");
     var url = "?mod=almacen&sub=nuevaentrada";
+    var consecutivo = genConsecutivo();
     
     document.title = document.title+" Orden de producción"; //set Titulo de la pagina
     document.getElementById("total_iva").onchange = function(){ recalcularTotalItem(); };
@@ -285,16 +286,19 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
     
     function validar_total_factura(){
       var descuentos = form["total_descuentos"].value;
-      var total = form["total_factura"].value;
+      var total = parseFloat(form["total_factura"].value).toFixed(2);
       var iva = form["total_iva"].value;
       var subtotal = sessionStorage.getItem("subtotal_factura");
+      var total_items = ((parseFloat(subtotal)+parseFloat(iva))-parseFloat(descuentos)).toFixed(2);
+      console.log(total_items);
       
-      if( ((parseFloat(subtotal)+parseFloat(iva))-parseFloat(descuentos)).toFixed(2) == parseFloat(total).toFixed(2)){
+      if( total_items == total){
         return true;
       }else{
         notify('Advertencia!','Los valores totales no coinciden, con la relación de items. Verifique por favor.','warning');
         return false;
       }
+      
       
     }
 
@@ -302,7 +306,8 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
       var data = value;
       var getData = arrConcepto.find(x => x.oid === data.id);
       
-      document.getElementById("unidad_medida").value = getData["mate_tipomedida_oid"];
+      var um = send_xhr(null,{type_xhr:"get_result_one",table:"tbl_tipomedidas",key:"oid",value:getData["mate_tipomedida_oid"],key_return:null});
+      document.getElementById("unidad_medida").value = um["data"]["tpme_descripcion"];
     }
     
 
@@ -418,20 +423,27 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
       }
 
     }
-
+    
+    function genConsecutivo(){
+      var now = Date.now();
+      var base64 = window.btoa(now);
+      
+      return base64;
+    }
+ 
     function guardar(){
       
       if ( validarform() && arrItems.length > 0 && validar_total_factura()) {
-        var arr = send_xhr(form,{items:JSON.stringify(arrItems),enal_subtotal:sessionStorage.getItem("subtotal_factura"),type_xhr:"set_form",fn:"guardar_entrada_almacen"});
+        var arr = send_xhr(form,{items:JSON.stringify(arrItems),enal_consecutivo:consecutivo,enal_subtotal:sessionStorage.getItem("subtotal_factura"),type_xhr:"set_form",fn:"guardar_entrada_almacen"});
         
         if (arr["bool"]) {
-          
+            console.log(arr["data"]);
             notify('Mensaje!','La operación fue realizada satisfactoriamente.','success');
             var confimar = confirm("Desea imprimir el comprobante de entrada?");
             
             if(confimar){
-              Abrir_ventana('?mod=almacen&sub=nuevaentrada');
-              window.location.href = url;                    
+              Abrir_ventana('/pages/imprimir.php?f=comproentrada&d='+ consecutivo );
+              window.setTimeout( window.location.href = url , 3000);                    
             }else{
               window.location.href = url;
             }
@@ -637,17 +649,45 @@ $arrTmovimientos = json_decode(base64_decode($misc->consultaDesplegables('tipos_
         placeholder: "With Max Selection limit 4",
         allowClear: true
       });
+      
+      $('.fecha').daterangepicker({
+        showDropdowns : true,
+        singleDatePicker: true,
+        locale : {
+          format : "DD-MM-YYYY",
+          daysOfWeek : [
+            "D",
+            "L",
+            "M",
+            "M",
+            "J",
+            "V",
+            "S"
+          ],
+          monthNames : [
+            "Enero",
+            "Febrero",
+            "Marzo",
+            "Abril",
+            "Mayo",
+            "Junio",
+            "Julio",
+            "Agosto",
+            "Septiembre",
+            "Octubre",
+            "Noviembre",
+            "Diciembre"
+          ],
+          firstDay : 1
+        }
+      });
+      
     });
+    
   </script>
   <!-- /Select2 -->
 
-  <!-- Autosize -->
-  <script>
-    $(document).ready(function() {
-      autosize($('.resizable_textarea'));
-    });
-  </script>
-  <!-- /Autosize -->
+
 
 
 <?php 

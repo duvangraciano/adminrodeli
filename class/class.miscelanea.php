@@ -294,6 +294,61 @@ class Miscelanea
 			return '{"mensaje":"Se completó la operación","bool":true}';
 		}
 	}
+	
+	function guardarnuevotercero($post)
+	{
+		$_post = $post;
+
+		$query = "INSERT INTO `tbl_proveedores` ";
+		$query .= " (`".implode("`, `", array_keys($_post))."`) VALUES (";
+
+		foreach ($_post as $key => $value) {
+			$query .= "'".htmlspecialchars($value)."',";
+		}
+
+		$query = rtrim($query,",").")";
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+		}else{
+			return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$query);
+		}	
+	}
+	
+	function actualizartercero($post)
+	{
+		$_post = array_slice($post, 0, -1);
+		$query = "UPDATE `tbl_proveedores` SET ";
+		foreach ($_post as $key => $value) {
+			$query .= " `".$key."` = '".htmlspecialchars($value)."',";
+		}
+		$query = rtrim($query,",")." WHERE `oid`=".$post['oid']."; ";
+		$result = $this->conn->prepare( $query );
+
+		if (! $result->execute() ) {
+			$err = $result->errorInfo();
+			return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+		}else{
+			return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$query);
+		}
+	}
+	
+	function get_productos_venta($post)
+	{
+		
+		$cfg = $_SESSION['cfg'];
+		$inv = unserialize($cfg['data']['conf_inventario']);
+		$cfg_costo = $inv['tipoprecio'];
+		$query = "SELECT *, `".$cfg_costo."` AS costo FROM `tbl_materiaprima` ";
+		
+		$result = $this->conn->prepare( $query );
+		$result->execute();
+		
+		return $result;
+	}
+	
 
 
 	function guardarOrden($id,$resp,$arrItems)
@@ -379,29 +434,35 @@ class Miscelanea
 			$rs = $this->consultaExistencias($val);
 			
 			if ($rs["bool"] && $rs["rowcount"] > 0) {
-				if ($rs["data"]["mate_existencias"]) {
+				if (isset($rs["data"]["mate_existencias"])) {
 					$cant_ = floatval( $rs["data"]["mate_existencias"] ) + floatval( $val['cantidad'] );
-					$costo_ = ($rs["data"]["mate_costocompra"] == 0 ? floatval( $val['costounitario'] ) : ( floatval( $rs["data"]["mate_costocompra"] ) + floatval( $val['costounitario'] ) ) /2);
-					array_push($cant_ext, array('oid' => $val['oid'],'cantidad' => $cant_, 'costo' => $costo_ ) );
+					$costo_promedio = ($rs["data"]["mate_costocompra"] == 0 ? floatval( $val['costounitario'] ) : ( floatval( $rs["data"]["mate_costounidad"] ) + floatval( $val['costounitario'] ) ) /2);
+					$costo_ = floatval( $val['costounitario'] ) * $rs["data"]["mate_unidadmedida"];
+					$costo_ultimo = floatval( $val['costounitario'] );
+					$costo_maximo = ( $costo_ultimo > $rs["data"]["mate_costounidad"] ? $costo_ultimo : $rs["data"]["mate_costounidad"] );
+					array_push($cant_ext, array('oid' => $val['oid'],'cantidad' => $cant_, 'costo' => $costo_, 'costoultimo' => $costo_ultimo, 'costomaximo' => $costo_maximo, 'costounidad' => $costo_promedio ) );
 					
 					$count++;
 					if ($count >= count($items)) {
 						$str_q = '';
 						foreach ($cant_ext as $k) {
-							$str_q .= "UPDATE `tbl_materiaprima` SET `mate_existencias`='".$k['cantidad']."' , `mate_costocompra`='".$k['costo']."' WHERE `oid`='".$k['oid']."'; ";
+							$str_q .= "UPDATE `tbl_materiaprima` SET `mate_existencias`='".$k['cantidad']."' , `mate_costocompra`='".$k['costo']."' , `mate_costoultimo`='".$k['costoultimo']."' , `mate_costomaximo`='".$k['costomaximo']."' , `mate_costounidad`='".$k['costounidad']."' WHERE `oid`='".$k['oid']."'; ";
 						}
 						
 						$_post = $post;
 						$str_q .= "INSERT INTO `tbl_entradaalmacen` ";
-						$str_q .= "(enal_date_documento, 	enal_id_tercero, enal_tipo_documento, 	enal_num_documento, enal_tipo_movimiento, enal_data_items, enal_observaciones, enal_iva, enal_subtotal, enal_descuentos, enal_total, enal_estado, 	enal_usuario_id ) ";
-						$str_q .= "VALUES('".date("Y-m-d 00:00:00", strtotime($post['enal_date_documento']) )."','".$post['enal_id_tercero']."','".$post['enal_tipo_documento']."','".$post['enal_num_documento']."','".$post['enal_tipo_movimiento']."','".serialize($items)."','".$post['enal_observaciones']."','0','0','0','0','CONFIRMADO','".$_SESSION['login']['oid']."') ;";
+						$str_q .= "(enal_consecutivo, enal_date_documento, 	enal_id_tercero, enal_tipo_documento, enal_num_documento, enal_tipo_movimiento, enal_data_items, enal_observaciones, enal_iva, enal_subtotal, enal_descuentos, enal_total, enal_estado, 	enal_usuario_id ) ";
+						$str_q .= "VALUES('".$post['enal_consecutivo']."', '".date("Y-m-d 00:00:00", strtotime($post['enal_date_documento']) )."','".$post['enal_id_tercero']."','".$post['enal_tipo_documento']."','".$post['enal_num_documento']."','".$post['enal_tipo_movimiento']."','".serialize($items)."','".$post['enal_observaciones']."','".$post['enal_iva']."','".$post['enal_subtotal']."','".$post['enal_descuentos']."','".$post['enal_total']."','1','".$_SESSION['login']['oid']."'); SELECT LAST_INSERT_ID() AS lastId ";
 						
-						$result = $this->conn->prepare( $str_q );
+						$conn = $this->conn;
+						$result = $conn->prepare( $str_q );
+						
 						if (! $result->execute() ) {
 							$err = $result->errorInfo();
-							return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
+							return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$str_q);
 						}else{
-							return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$str_q);
+							$getID = $conn->lastInsertId();
+							return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$getID,'query'=>$str_q);
 						}
 					}
 				}else{
@@ -450,7 +511,8 @@ class Miscelanea
 							$err = $result->errorInfo();
 							return array('bool'=>false,'mensaje'=>'Se produjo un error: '.$err[2],'query'=>$query);
 						}else{
-							return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$str_q);
+							$lastId = $this->conn->lastInsertId();
+							return array('bool'=>true,'mensaje'=>'Se completó la operación!','data'=>$result->rowCount(),'query'=>$lastId);
 						}
 					}
 				}else{
@@ -519,10 +581,11 @@ class Miscelanea
 		$file = $this->subirArchivo($files);
 		$imagefile = ($file != null ? "'".$file."'" : 'NULL');
 		$codigo = json_decode($this->consularCodigo($arrPost['com_codigo']),true);
+		$componentes = base64_encode(json_encode($arrPost['componentes']));
 		
 		if ($codigo['rowcount'] == 0) {
-			$query = "INSERT INTO `tbl_compuestos` (com_codigo,com_descripcion,com_componentes,com_imagen,com_anchominimo,com_altominimo,com_categoria,com_esmedible,com_observaciones) ";
-			$query .= " VALUES ('".strtolower($arrPost['com_codigo'])."','".strtoupper($arrPost['com_descripcion'])."','".base64_encode($arrPost['globalArrCompo'])."',".$imagefile.",'".$arrPost['com_anchominimo']."','".$arrPost['com_altominimo']."','".$arrPost['com_categoria']."','".$arrPost['com_esmedible']."','".$arrPost['com_color']."')";
+			$query = "INSERT INTO `tbl_compuestos` (com_codigo,com_descripcion,com_componentes,com_produccion,com_imagen,com_anchominimo,com_altominimo,com_categoria,com_esmedible,com_observaciones) ";
+			$query .= " VALUES ('".strtolower($arrPost['com_codigo'])."','".strtoupper($arrPost['com_descripcion'])."','".$componentes."','".base64_encode($arrPost['globalArrCompo'])."',".$imagefile.",'".$arrPost['com_anchominimo']."','".$arrPost['com_altominimo']."','".$arrPost['com_categoria']."','".$arrPost['com_esmedible']."',NULL)";
 
 			$result = $this->conn->prepare( $query );
 

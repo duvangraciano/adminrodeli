@@ -52,10 +52,10 @@ $_ent = ($get_all['bool']?$get_all['data']:array());
                                     <td>'.mb_strtoupper($misc->get_one('tbl_proveedores',null,'prov_identificacion',$value['enal_id_tercero'])['data']['prov_nombre'],'utf-8').'</td>
                                     <td>'.$value['enal_tipo_documento'].'</td>
                                     <td>'.$value['enal_num_documento'].'</td>
-                                    <td>'.$value['enal_date_documento'].'</td>
-                                    <td>'.$value['enal_subtotal'].'</td>
-                                    <td>'.$value['enal_iva'].'</td>
-                                    <td>'.$value['enal_total'].'</td>
+                                    <td>'.date_format(date_create($value['enal_date_documento']),'d-m-Y').'</td>
+                                    <td class="text-right">'.number_format((float)$value['enal_subtotal'], 2, '.', ',').'</td>
+                                    <td class="text-right">'.number_format((float)$value['enal_iva'], 2, '.', ',').'</td>
+                                    <td class="text-right">'.number_format((float)$value['enal_total'], 2, '.', ',').'</td>
                                     <td><a href="?mod=almacen&sub=nuevaentrada&view='.base64_encode(json_encode($value)).'" class="btn btn-default btn-xs"><i class="fa fa-eye"></i> ver</a></td>
                                   </tr>
                           ';
@@ -82,10 +82,7 @@ $_ent = ($get_all['bool']?$get_all['data']:array());
       </div>
     </div>
   <div id="reloadscript"></div>
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+
   <!-- FastClick -->
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
   <!-- NProgress -->
@@ -112,17 +109,12 @@ $_ent = ($get_all['bool']?$get_all['data']:array());
   <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
   <!-- DateJS -->
   <script src="../plugins/DateJS/build/date.js"></script>
-  <!-- JQVMap -->
-  <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-  <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-  <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+
 
   <!-- bootstrap-daterangepicker -->
   <script src="../plugins/moment/moment.min.js"></script>
   <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-  <!-- Custom Theme Scripts -->
-  <script src="../plugins/build/js/custom.min.js"></script>
 
   <!-- bootstrap-wysiwyg -->
   <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>

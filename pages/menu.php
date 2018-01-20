@@ -18,7 +18,7 @@ $sub = (isset($_GET['sub'])? $_GET['sub'] : '');
         <li><a><i class="fa fa-desktop"></i> Cotizaciones <span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">
             <li><a href="?mod=cotizaciones&sub=cotizador">Cotizador</a></li>
-            <li><a href="#">Cotización detallada</a></li>
+            <li><a href="?mod=cotizaciones&sub=cotizadordetallado">Cotización detallada</a></li>
             <li><a href="#">Cotizaciones generadas</a></li>            
             <li><a href="?mod=cotizaciones&sub=clientes">Clientes</a></li>
           </ul>
@@ -57,6 +57,7 @@ $sub = (isset($_GET['sub'])? $_GET['sub'] : '');
         <li><a><i class="fa fa-bar-chart-o"></i> Facturación <span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">
             <li><a href="?mod=facturacion&sub=nuevaventa">Ventas</a></li>
+            <li><a href="?mod=facturacion&sub=facturas">Facturas</a></li>
           </ul>
         </li>
         <li><a><i class="fa fa-clone"></i> Inventario <span class="fa fa-chevron-down"></span></a>

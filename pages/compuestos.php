@@ -61,7 +61,7 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
 
                 <div class="form-group col-md-3 col-sm-3 col-xs-12">
                   <label class="control-label" for="com_categoria">Categoria </label>
-                  <select class="form-control" id="com_categoria" name="com_categoria" required="required" tabindex="-1" title="CATEGORÍA">
+                  <select class="form-control" id="com_categoria" name="com_categoria" required="required" tabindex="-1" data-placeholder="SELECCIONE" title="CATEGORÍA">
                     <?php 
                       echo '<option></option>';
                       foreach ($arrCategoria as $value) {
@@ -73,35 +73,27 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
               </div>
 
               <div class="row">
-                <div class="form-group col-md-3 col-sm-3 col-xs-12">
-                  <label class="control-label" for="com_color">Acabado </label>
-                  <select class="select2_multiple form-control" id="com_color" name="com_color" required="required" tabindex="-1" multiple="multiple" title="ACABADO">
+                <div class="form-group col-md-9 col-sm-9 col-xs-12">
+                  <label class="control-label" for="componentes">Componentes variables de producción</label>
+                  <select class="select2_multiple form-control" id="componentes" name="componentes[]" required="required" tabindex="-1" multiple="multiple" data-placeholder="SELECCIONE VARIOS" title="ACABADO">
                     <?php 
-                      echo '<option value="1">ANOLOK</option>
-                            <option value="2">CRUDO</option>
-                            <option value="3">BLANCO</option>
-                            <option value="4">GRIS PLATA</option>
-                            <option value="5">NATURAL MATE</option>';
+                      foreach ($arrComponente as $value) {
+                        echo '<option data-toggle="tooltip" title="'.$value['cop_descripcion'].'" value="'.$value['oid'].'">'. strtoupper($value['oid'].' - '.$value['cop_descripcion']).'</option>';
+                      }
                       
                      ?>
                   </select>
                 </div>
 
-                <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <label class="control-label" for="com_iva">Iva % </label>
-                  <input type="number" id="com_iva" min="1" name="com_iva" required="required"  class="form-control" placeholder="IVA" title="IVA">
-                  <code>Número sin %</code>
-                </div>
-
               </div>
               
-              <h4>Conceptos de producción</h4>
+              <h4>Componentes fijos de producción</h4>
               <div class="ln_solid"></div>
 
               <div class="row">
                 <div class="form-group col-md-3 col-sm-3 col-xs-12">
                   <label class="control-label" for="com_linea">Línea </label>
-                  <select class="form-control" id="com_linea" name="com_linea">
+                  <select class="form-control" id="com_linea" name="com_linea" data-placeholder="SELECCIONE">
                     <?php 
                       echo '<option></option>';
                       foreach ($arrLinea as $value) {
@@ -109,13 +101,10 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
                       }
                      ?>
                   </select>
-                </div>              
-              </div>
-
-              <div class="row">
+                </div>
                 <div class="form-group col-md-3 col-sm-3 col-xs-12">
                   <label class="control-label" for="com_componente">Componente </label>
-                  <select class="form-control" id="com_componente" name="com_componente" tabindex="-1" title="COMPONENTE">
+                  <select class="form-control" id="com_componente" name="com_componente" tabindex="-1" data-placeholder="SELECCIONE" title="COMPONENTE">
                     <?php 
                       echo '<option></option>';
                       foreach ($arrComponente as $value) {
@@ -126,7 +115,7 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <div class="form-group col-md-3 col-sm-3 col-xs-12">
                   <label class="control-label" for="com_materiaprima">Elementos </label>
-                  <select class="form-control" id="com_materiaprima" name="com_materiaprima"  tabindex="-1" title="ELEMENTOS">
+                  <select class="form-control" id="com_materiaprima" name="com_materiaprima" data-placeholder="SELECCIONE" tabindex="-1" title="ELEMENTOS">
                   <?php 
                     echo '<option></option>';
                     foreach ($arrMPrima as $value) {
@@ -137,35 +126,23 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
                   ?>
                   </select>
                 </div>
-
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
-                  <label class="control-label" for="com_factor">Factor diferencia </label>
-                  <input type="number" id="com_factor"  name="com_factor"  class="form-control" value="0" placeholder="CM">
-                  <code>Centímetros</code>
-                </div>
-
-                <div class="form-group col-md-1 col-sm-1 col-xs-12">
-                  <label class="control-label" for="com_comppal">CompoPPAL </label>
-                  <select class="form-control" id="com_comppal" name="com_comppal"  tabindex="-1" title="Componente Principal" disabled="disabled">
+                  <label class="control-label" for="com_comppal">Principal </label>
+                  <select class="form-control" id="com_comppal" name="com_comppal" data-placeholder="SELECCIONE"  tabindex="-1" title="Componente Principal">
                     <option></option>
                     <option value="0">NO</option>
                     <option value="1">SI</option>
                   </select>
                 </div>
-
-                <div class="form-group col-md-2 col-sm-2 col-xs-12 col-md-offset-1 col-sm-offset-1">
-                  <label class="control-label" for="com_costo">Costo $</label>
-                  <input type="text" id="com_costo" name="com_costo"  class="form-control" placeholder="COSTO" title="COSTO">
-                  <code>Unid/Metro Lineal</code>
-                </div>
-                
-              </div>
-
-              <div class="row">
-                <div class="form-group col-md-12 col-sm-12 col-xs-12">
+                <div class="form-group col-md-1 col-sm-1 col-xs-12">
+                  <label class="control-label" for=""></label>
                   <button id="btnadd" type="button" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Añadir</button>
                 </div>
               </div>
+
+              <div class="row">
+              </div>
+
 
               <div class="row">
                 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -178,7 +155,6 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
                           <th style="width: 50%;">Descripcion </th>
                           <th>Componente </th>
                           <th>Linea </th>
-                          <th>Costo M.L </th>
                         </tr>
                       </thead>
 
@@ -190,13 +166,8 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
               </div>
               <hr>
               <div class="row ">
-                <div class="form-group  col-md-2 col-sm-2 col-xs-12">
-                  <label class="control-label " for="precio_1">Precio 1</label>
-                  <input type="text" id="precio_1" name="precio_1"  class="form-control" placeholder="PRECIO 1" title="PRECIO 1">
-                </div>
 
               </div>
-
 
               <div class="row">
                 <div class="form-group col-md-12 col-sm-12 col-xs-12">
@@ -222,10 +193,6 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
       </div>
     </div>
   <div id="reloadscript"></div>
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
   <!-- FastClick -->
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
   <!-- NProgress -->
@@ -252,17 +219,12 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
   <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
   <!-- DateJS -->
   <script src="../plugins/DateJS/build/date.js"></script>
-  <!-- JQVMap -->
-  <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-  <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-  <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+
 
   <!-- bootstrap-daterangepicker -->
   <script src="../plugins/moment/moment.min.js"></script>
   <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-  <!-- Custom Theme Scripts -->
-  <script src="../plugins/build/js/custom.min.js"></script>
 
   <!-- bootstrap-wysiwyg -->
   <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
@@ -322,22 +284,19 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
       var com_linea = form["com_linea"], linea = com_linea.options[com_linea.selectedIndex];
       var com_componente = form["com_componente"], componente = com_componente.options[com_componente.selectedIndex];
       var com_materiaprima = form["com_materiaprima"], materiaprima = com_materiaprima.options[com_materiaprima.selectedIndex];
-      var com_factor = form["com_factor"];
       var com_type = form["com_type"];
       var com_comppal = form["com_comppal"];
-      var com_costo = form["com_costo"];
       var splitmp = materiaprima.text.split("-");
 
 
-      if ( emptya(com_componente) && emptya(com_materiaprima) && emptya(com_costo) ) {
+      if ( emptya(com_componente) && emptya(com_materiaprima) ) {
 
           var formData = new FormData();
 
-          var item = {oid:materiaprima.value, codigo:splitmp[0], nommateprima:splitmp[1], linea:linea.value, nomlinea:linea.text, componente:componente.value, nomcomponente:componente.text, factor:com_factor.value, comppal:com_comppal.value, costo:com_costo.value, type:null};
+          var item = {oid:materiaprima.value, codigo:splitmp[0], nommateprima:splitmp[1], linea:linea.value, nomlinea:linea.text, componente:componente.value, nomcomponente:componente.text, comppal:com_comppal.value, type:null};
 
       
         globalArrCompo.push(item);           
-
         funcionListarTabla();        
 
       }
@@ -355,12 +314,11 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
           html += '<td class=" ">'+globalArrCompo[i]['nommateprima']+'</td>';
           html += '<td class=" ">'+globalArrCompo[i]['nomcomponente']+'</td>';
           html += '<td class=" ">'+globalArrCompo[i]['nomlinea']+'</td>';
-          html += '<td class=" ">'+globalArrCompo[i]['costo']+'</td>';
           html += '</tr>';
           
         }
           document.getElementById("tbody").innerHTML = html;
-          calularCostos();
+          
     }
 
     function listarmateriaprima() {
@@ -372,72 +330,36 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
 
       for (var i = 0; i < mp.length; i++) {
 
-        if (form["com_componente"].value == "") {
+        if (form["com_componente"].value == "" && mp[i]["mate_proppal"] == 1) {
           if (oid != "") {
             if (mp[i]["mate_tipomaterial_oid"] == oid) {
-              var descripcion = mp[i]["mate_referencia"]+" - "+mp[i]["mate_descripcion"]+" "+mp[i]["mate_acabado"];
+              var descripcion = mp[i]["mate_referencia"]+" - "+mp[i]["mate_descripcion"];
               option += "<option value=\""+mp[i]["oid"]+"\">"+descripcion+"</option>";
             }            
           }else{
-            var descripcion = mp[i]["mate_referencia"]+" - "+mp[i]["mate_descripcion"]+" "+mp[i]["mate_acabado"];
+            var descripcion = mp[i]["mate_referencia"]+" - "+mp[i]["mate_descripcion"];
               option += "<option value=\""+mp[i]["oid"]+"\">"+descripcion+"</option>";
           }
         }else{
           
-          if (mp[i]["mate_tipocomponente"] == form["com_componente"].value) {
+          if (mp[i]["mate_tipocomponente"] == form["com_componente"].value && mp[i]["mate_proppal"] == 1) {
 
-            var descripcion = mp[i]["mate_referencia"]+" - "+mp[i]["mate_descripcion"]+" "+mp[i]["mate_acabado"];
+            var descripcion = mp[i]["mate_referencia"]+" - "+mp[i]["mate_descripcion"];
             option += "<option value=\""+mp[i]["oid"]+"\">"+descripcion+"</option>";
           }
         }
                 
       }
       form["com_materiaprima"].innerHTML = option;
-      form["com_factor"].value = "";
       form["com_comppal"].value = "";
-      form["com_costo"].value = "";
     }
 
-    function calularCostos() {
-      var formData = new FormData();
-
-      formData.append("com_categoria", form["com_categoria"].value);
-      formData.append("com_codigo", form["com_codigo"].value);
-      formData.append("globalArrCompo", JSON.stringify(globalArrCompo));
-      formData.append("data", "calcularcostos");
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", "../data/data.php",false);
-      xhr.send(formData);
-
-      if (xhr.status == 200) {
-        form["precio_1"].value = xhr.responseText;
-        /*
-        var result = JSON.parse(xhr.responseText);
-        if (result["bool"]) {
-          alert(result["mensaje"]);
-          //window.location.reload(true);
-        }else{
-          alert(result["mensaje"]);
-        }
-        */
-      } else {
-        alert('No se enviaron datos!');
-      }
-    }
-
-    function listarTipos() {
-      var html = '<option></option><option value="a">TIPO A</option><option value="b">TIPO B</option><option value="c">TIPO C</option><option value="d">TIPO D</option><option value="e">TIPO E</option>';
-
-      return html;
-    }
 
     function alcambiarmateriaprima(){
       var arrMPrima = <?php echo json_encode($arrMPrima);  ?>;
       for (var i = 0; i < arrMPrima.length; i++) {
 
         if (arrMPrima[i]["oid"] == form["com_materiaprima"].value) {
-          form["com_costo"].value = arrMPrima[i]["mate_costocompra"];
           form["com_comppal"].value = arrMPrima[i]["mate_proppal"];
         }
 
@@ -472,7 +394,7 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
         if (form[i].required === true) {          
           if (emptya(form[i])) {
             c++;
-            if (c >= 8) {
+            if (c >= 7) {
               if (globalArrCompo.length > 0) {
 
                 var formData = new FormData(form);
@@ -503,6 +425,9 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
                 alert("No se puede guardar el compuesto porque no existe ningún elemento añadido.");
                 break;
               }
+              
+            }else{
+              console.log(c);
             }
             
           }else{
@@ -632,58 +557,6 @@ $arrMPrima = $misc->listarMateriaPrima()->fetchAll(PDO::FETCH_ASSOC);
   </script>
   <!-- /Select2 -->
 
-  <!-- Parsley -->
-  <script>
-    $(document).ready(function() {
-      $.listen('parsley:field:validate', function() {
-        validateFront();
-      });
-      $('#demo-form .btn').on('click', function() {
-        $('#demo-form').parsley().validate();
-        validateFront();
-      });
-      var validateFront = function() {
-        if (true === $('#demo-form').parsley().isValid()) {
-          $('.bs-callout-info').removeClass('hidden');
-          $('.bs-callout-warning').addClass('hidden');
-        } else {
-          $('.bs-callout-info').addClass('hidden');
-          $('.bs-callout-warning').removeClass('hidden');
-        }
-      };
-    });
-
-    $(document).ready(function() {
-      $.listen('parsley:field:validate', function() {
-        validateFront();
-      });
-      $('#demo-form2 .btn').on('click', function() {
-        $('#demo-form2').parsley().validate();
-        validateFront();
-      });
-      var validateFront = function() {
-        if (true === $('#demo-form2').parsley().isValid()) {
-          $('.bs-callout-info').removeClass('hidden');
-          $('.bs-callout-warning').addClass('hidden');
-        } else {
-          $('.bs-callout-info').addClass('hidden');
-          $('.bs-callout-warning').removeClass('hidden');
-        }
-      };
-    });
-    try {
-      hljs.initHighlightingOnLoad();
-    } catch (err) {}
-  </script>
-  <!-- /Parsley -->
-
-  <!-- Autosize -->
-  <script>
-    $(document).ready(function() {
-      autosize($('.resizable_textarea'));
-    });
-  </script>
-  <!-- /Autosize -->
 
 
 

@@ -3,7 +3,8 @@
 if (session_status() != PHP_SESSION_NONE) {
 if (isset($pu['ver_clientes'])) {
   
-$proveedores = array();//$misc->listarterceros()->fetchAll(PDO::FETCH_ASSOC);
+$get_all = $misc->get_all('tbl_proveedores',null,'prov_escliente','1');
+$clientes = ( $get_all['bool'] ? $get_all['data'] : array() );
 
 $arrEstado = json_decode('[{"id":"1","estado":"Confirmado","label":"success"},{"id":"2","estado":"Anulado","label":"warning"},{"id":"3","estado":"Registrado","label":"default"}]', true); // json_decode para Objetos se denife True, para Arreglos simples False.
 $arrConceptos = json_decode('[{"oid":"1","codigo":"H2050A","concepto":"Ventana en hierro sistema 2050A","tipo":"Hierro","sistema":"2050A","categoria":"1","esmedida":"1"},{"oid":"2","codigo":"H10A","concepto":"Puerta en hierro sistema 10A","tipo":"Hierro","sistema":"10A","categoria":"2","esmedida":"1"},{"oid":"3","codigo":"H2050B","concepto":"Ventana en hierro sistema 2050B","tipo":"Hierro","sistema":"2050B","categoria":"1","esmedida":"1"},{"oid":"4","codigo":"CR33","concepto":"Chapa en hierro tipo L R33","tipo":"Hierro","sistema":"","categoria":"3","esmedida":"0"}]', true);
@@ -20,14 +21,14 @@ $arrConceptos = json_decode('[{"oid":"1","codigo":"H2050A","concepto":"Ventana e
           <div class="x_title">
             <h2>Clientes <small>Vista previa</small></h2>
             <a href="?mod=cotizaciones&sub=tercero" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Nuevo</a> 
-            <button onclick="" type="button" class="btn btn-success pull-right"><i class="fa fa-check-circle"></i> Boton</button>
+            <!-- <button onclick="" type="button" class="btn btn-success pull-right"><i class="fa fa-check-circle"></i> Boton</button> -->
             <div class="clearfix"></div>
           </div>
           <div class="x_content">
             <div class="row">
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="table-responsive">
-                  <table id="tablaordenesproduccion" class="table table-striped table-bordered bulk_action">
+                  <table id="tablaordenesproduccion"  style="width: 100%;" class="table table-striped table-bordered bulk_action">
                     <thead>
                       <tr>
                         <th><input type="checkbox" id="check-all" class="flat"></th>
@@ -43,16 +44,16 @@ $arrConceptos = json_decode('[{"oid":"1","codigo":"H2050A","concepto":"Ventana e
                     <tbody id="tbody">
                       <?php  
 
-                        foreach ($proveedores as $value) {
+                        foreach ($clientes as $value) {
                           echo '
                                   <tr class="even pointer">
                                     <td class="a-center "><input type="checkbox" class="flat" name="table_records"></td>
-                                    <td>'.$value['prov_tipoidentificacion_oid'].'</td>
+                                    <td>'.$misc->get_one('tbl_tipoidentificacion',null,'oid',$value['prov_tipoidentificacion_oid'])['data']['tpid_observacion'].'</td>
                                     <td>'.$value['prov_identificacion'].'</td>
                                     <td>'.$value['prov_nombre'].'</td>
-                                    <td>'.$value['prov_telfijo'].'</td>
+                                    <td>'.$value['prov_telfijo'].' '.$value['prov_telcelular'].'</td>
                                     <td>'.$value['prov_email'].'</td>
-                                    <td><a class="btn btn-default btn-xs"><i class="fa fa-eye"></i> ver</a></td>
+                                    <td><a href="?mod=cotizaciones&sub=tercero&oid='.$value['oid'].'" class="btn btn-primary btn-xs"><i class="fa fa-eye"></i> Modificar</a></td>
                                   </tr>
                           ';
                         }
@@ -78,10 +79,7 @@ $arrConceptos = json_decode('[{"oid":"1","codigo":"H2050A","concepto":"Ventana e
       </div>
     </div>
   <div id="reloadscript"></div>
-  <!-- jQuery -->
-  <script src="../plugins/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="../plugins/bootstrap/dist/js/bootstrap.min.js"></script>
+
   <!-- FastClick -->
   <script src="../plugins/fastclick/lib/fastclick.js"></script>
   <!-- NProgress -->
@@ -108,17 +106,12 @@ $arrConceptos = json_decode('[{"oid":"1","codigo":"H2050A","concepto":"Ventana e
   <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
   <!-- DateJS -->
   <script src="../plugins/DateJS/build/date.js"></script>
-  <!-- JQVMap -->
-  <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-  <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-  <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+
 
   <!-- bootstrap-daterangepicker -->
   <script src="../plugins/moment/moment.min.js"></script>
   <script src="../plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-  <!-- Custom Theme Scripts -->
-  <script src="../plugins/build/js/custom.min.js"></script>
 
   <!-- bootstrap-wysiwyg -->
   <script src="../plugins/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>

@@ -7,7 +7,8 @@ if (isset($pu['generar_cotizacion'])) {
 $arrCategoria = $misc->listarCategorias()->fetchAll(PDO::FETCH_ASSOC); // json_decode para Objetos se denife True, para Arreglos simples False.
 $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
 
-
+$_aca = $misc->consultaDesplegables('acabados')->fetch(PDO::FETCH_ASSOC);
+$lista_aca = json_decode(base64_decode($_aca['des_data']),true);
 
 ?>
 	<div class="right_col" role="main">
@@ -49,7 +50,7 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
               <div class="row">
                 <div class="form-group col-md-3 col-sm-3 col-xs-12">
                   <label class="control-label" for="categoria">Categoria </label>
-                  <select class="form-control" id="categoria" name="categoria" required="required" tabindex="-1">
+                  <select class="form-control" id="categoria" name="categoria" required="required" data-placeholder="SELECCIONE" tabindex="-1">
                     <option></option>
                     <?php 
                       foreach ($arrCategoria as $value) {
@@ -60,9 +61,20 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <div class="form-group col-md-3 col-sm-3 col-xs-12">
                   <label class="control-label" for="conceptos">Concepto </label>
-                  <select class="form-control" id="conceptos" name="conceptos" required="required" tabindex="-1">
+                  <select class="form-control" id="conceptos" name="conceptos" required="required"  data-placeholder="SELECCIONE" tabindex="-1">
                   </select>
-                </div>                
+                </div>
+                <div class="form-group col-md-2 col-sm-2 col-xs-12">
+                  <label class="control-label" for="acabado">Acabado </label>
+                  <select class="form-control" id="acabado" name="acabado" required="required" tabindex="-1" data-placeholder="SELECCIONE" title="ACABADO">
+                    <option></option>
+                    <?php 
+                      foreach ($lista_aca as $v) {
+                        echo '<option value="'.$v['sigla'].'">'.$v['acab_descripcion'].'</option>';
+                      }
+                     ?>
+                  </select>
+                </div>
                 <div class="form-group col-md-1 col-sm-1 col-xs-12">
                   <label class="control-label" for="cantidad">Cantidad </label>
                   <input type="number" id="cantidad" min="1" name="cantidad" required="required" class="form-control" value="1" placeholder="UNIDAD">
@@ -75,27 +87,27 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
                   <label class="control-label" for="alto">Alto </label>
                   <input type="number" id="alto" min="1" name="alto" required="required" class="form-control" placeholder="Metros">
                 </div>
-                <div class="form-group col-md-3 col-sm-3 col-xs-12">
-                  <label class="control-label" for="asociar_item">Asociar a item... </label>
-                  <select class="form-control" id="asociar_item" name="asociar_item"  tabindex="-1">
-                    <option></option>
-                  </select>
-                </div>
+                
               </div>
 
               <div class="row">
-                <div class="form-group col-md-6 col-sm-6 col-xs-12">
+                <div class="form-group col-md-5 col-sm-5 col-xs-12">
                   <input type="text" id="observacion" name="observacion" required="required" class="form-control" placeholder="OBSERVACIONES">
                 </div>
-                <div class="form-group col-md-1 col-sm-1 col-md-offset-1 col-xs-12">
-                  <input type="number" id="descuento_item" min="1" name="descuento_item" required="required" class="form-control" placeholder="%">
+                <div class="form-group col-md-3 col-sm-3 col-xs-12">
+                  <select class="form-control" id="asociar_item" name="asociar_item"   data-placeholder="Asociar a item..." tabindex="-1">
+                    <option></option>
+                  </select>
+                </div>
+                <div class="form-group hide col-md-1 col-sm-1 col-md-offset-1 col-xs-12">
+                  <input type="number" id="descuento_item" min="1" name="descuento_item" required="required" class="form-control" placeholder="%" disabled>
                   <code>Descuento %</code>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
                   <select class="form-control" id="precio_item" data-placeholder="PRECIO" name="precio_item"  tabindex="-1">
-                    <option>Precio 1</option>
-                    <option>Precio 2</option>
-                    <option>Precio 3</option>
+                    <option value="mate_ganancia1">Precio 1</option>
+                    <option value="mate_ganancia2">Precio 2</option>
+                    <option value="mate_ganancia3">Precio 3</option>
                   </select>
                 </div>
                 <div class="form-group col-md-2 col-sm-2 col-xs-12">
@@ -184,10 +196,6 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
   <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
   <!-- DateJS -->
   <script src="../plugins/DateJS/build/date.js"></script>
-  <!-- JQVMap -->
-  <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-  <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-  <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
 
   <!-- bootstrap-daterangepicker -->
   <script src="../plugins/moment/moment.min.js"></script>
@@ -517,7 +525,7 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
         allowClear: true
       });
 
-      $(".tipocargo").select2({
+      $("#acabado").select2({
         placeholder: "SELECCIONE EL GRUPO",
         allowClear: true
       });
@@ -537,58 +545,6 @@ $arrConceptos = $misc->listarCompuestos()->fetchAll(PDO::FETCH_ASSOC);
   </script>
   <!-- /Select2 -->
 
-  <!-- Parsley -->
-  <script>
-    $(document).ready(function() {
-      $.listen('parsley:field:validate', function() {
-        validateFront();
-      });
-      $('#demo-form .btn').on('click', function() {
-        $('#demo-form').parsley().validate();
-        validateFront();
-      });
-      var validateFront = function() {
-        if (true === $('#demo-form').parsley().isValid()) {
-          $('.bs-callout-info').removeClass('hidden');
-          $('.bs-callout-warning').addClass('hidden');
-        } else {
-          $('.bs-callout-info').addClass('hidden');
-          $('.bs-callout-warning').removeClass('hidden');
-        }
-      };
-    });
-
-    $(document).ready(function() {
-      $.listen('parsley:field:validate', function() {
-        validateFront();
-      });
-      $('#demo-form2 .btn').on('click', function() {
-        $('#demo-form2').parsley().validate();
-        validateFront();
-      });
-      var validateFront = function() {
-        if (true === $('#demo-form2').parsley().isValid()) {
-          $('.bs-callout-info').removeClass('hidden');
-          $('.bs-callout-warning').addClass('hidden');
-        } else {
-          $('.bs-callout-info').addClass('hidden');
-          $('.bs-callout-warning').removeClass('hidden');
-        }
-      };
-    });
-    try {
-      hljs.initHighlightingOnLoad();
-    } catch (err) {}
-  </script>
-  <!-- /Parsley -->
-
-  <!-- Autosize -->
-  <script>
-    $(document).ready(function() {
-      autosize($('.resizable_textarea'));
-    });
-  </script>
-  <!-- /Autosize -->
 
 <?php 
 }else{

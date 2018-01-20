@@ -49,6 +49,10 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
                   <label class="control-label" for="domicilio">__ </label>
                   <input type="text" id="domicilio" class="form-control" placeholder="DIR. DOMICILIO" disabled>
                 </div>
+                <div class="form-group col-md-1 col-sm-1 col-xs-12 hide">
+                  <label class="control-label" for="ciudad">__ </label>
+                  <input type="text" id="ciudad" class="form-control" placeholder="DEP/CIUDAD" disabled>
+                </div>
               </div>
               
               <div class="row">
@@ -102,6 +106,10 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
                   <label class="control-label" for="">_ </label>
                   <button id="btnAdd" type="button" class="btn btn-info form-control"><i class="fa fa-plus"></i> Añadir</button>
                 </div>
+                <div class="form-group col-md-1 col-sm-1 col-xs-12 col-md-offset">
+                  <label class="control-label" for="">_ </label>
+                  <button type="button" class="btn btn-warning form-control" onclick="clear_()"><i class=""></i> Limpiar</button>
+                </div>
               </div> 
               <div class="row">
 
@@ -113,6 +121,7 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
                           <th>Codigo</th>
                           <th style="width: 59%">Descripción</th>
                           <th>Cantidad</th>
+                          <th>Vr Unitario</th>
                           <th>Subtotal</th>
                           <th></th>
                         </tr>
@@ -349,6 +358,7 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
         form_ = document.getElementById("form_modalidadventa");
     var url = "?mod=facturacion&sub=nuevaventa";
     var get_oid = null;
+    var cant_temp = 0;
     var additem = [], tempitem = [], saldos = {};
     var fact = send_xhr(null,{type_xhr:"get_result_one",table:"tbl_configuracion",key:"oid",value:"1",key_return:null});
     document.onload = function(){ load_data(); };
@@ -367,7 +377,7 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
     sessionStorage.setItem("total","0");
     
     function Abrir_ventana (pagina) {
-      var opciones="toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, width=508, height=365, top=85, left=140";
+      var opciones="toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, width=900, height=800";
       window.open(pagina,"",opciones);
     }
 
@@ -384,7 +394,8 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
     
     listar_productos();
     function listar_productos(){
-      var arr = send_xhr(null,{precio:form["tipo_precio"].value,type_xhr:"get_result_all",table:"tbl_materiaprima"});
+      //var arr = send_xhr(null,{precio:form["tipo_precio"].value,type_xhr:"get_result_all",table:"tbl_materiaprima"});
+      var arr = send_xhr(null,{val:null,type_xhr:"get_func",fn:"get_productos_venta"});
       localStorage.setItem("productos", JSON.stringify(arr["data"]));
       if (arr["data"]) {
         var result = arr["data"];
@@ -408,10 +419,16 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
       
       for(var i in productos){
         if(productos[i]["oid"] == value){
-          tempitem = {i_des:productos[i]["mate_descripcion"].toUpperCase(),i_stk:productos[i]["mate_existencias"],i_pre:productos[i]["mate_costocompra"]};
+          var precio = parseFloat(productos[i]["costo"]).toFixed( 2 );
+          var ganancia = parseFloat(productos[i][form["tipo_precio"].value]).toFixed( 2 );
+          var precio_final = (precio*(1+(ganancia/100)));
+          
+          tempitem = {i_des:productos[i]["mate_descripcion"].toUpperCase(),i_stk:productos[i]["mate_existencias"],i_pre:precio_final,i_isstk:productos[i]["mate_afectastok"]};
           form["descripcion"].value = tempitem["i_des"];
-          form["stock"].value = tempitem["i_stk"];
+          form["stock"].value = (parseInt(tempitem["i_isstk"]) == 0 ? NaN : parseFloat(tempitem["i_stk"]) - cant_temp );
           form["precio"].value = tempitem["i_pre"];
+          //cant_temp = 0;
+          console.log(cant_temp);
         }
       }
     }
@@ -440,10 +457,19 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
     
     function validar_additem(){
       if(tempitem["i_des"] && tempitem["i_stk"] && tempitem["i_pre"] && form["cantidad"].value){
-          if(parseFloat(tempitem["i_stk"]) > 0){
+        if(parseInt(tempitem["i_isstk"]) == 0){
+          if(parseFloat(form["cantidad"].value) > 0){
+            return true;
+          }else{
+            console.log("La cantidad no puede ser menor de 0!");
+            notify('Advertencia!','La cantidad no puede ser menor de 0!','warning');
+            return false;
+          }
+        }else{
+          if(parseFloat(tempitem["i_stk"]) > 0 && parseFloat(form["stock"].value) > 0){
             if(parseFloat(form["cantidad"].value) > 0){
               if(parseFloat(tempitem["i_stk"]) >= parseFloat(form["cantidad"].value) && parseFloat(form["cantidad"].value) <= parseFloat(tempitem["i_stk"]) ){
-                console.log("true");
+                
                 return true;
               }else{
                 console.log("La cantidad no puede ser mayor al stock!");
@@ -460,6 +486,8 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
             notify('Advertencia!','No hay existencias!','warning');
             return false;
           }
+        }
+          
       }else{
         //return false;
         console.log("Campos vacios");
@@ -482,18 +510,27 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
         
         for(var i in productos){
           if(productos[i]["oid"] == form["buscar"].value){
-            var precio = parseFloat(productos[i]["mate_costocompra"]).toFixed( 2 );
+            var precio = parseFloat(productos[i]["costo"]).toFixed( 2 );
             var ganancia = parseFloat(productos[i][form["tipo_precio"].value]).toFixed( 2 );
             var medida = parseFloat(productos[i]["mate_unidadmedida"]).toFixed( 2 );
             var cantidad = parseFloat(form["cantidad"].value).toFixed( 2 );
-            var subtotal =  ((precio*(1+(ganancia/100)))/medida)*cantidad ;
-            additem.push({"oid":productos[i]["oid"],"cod":productos[i]["mate_referencia"],"desc":form["descripcion"].value,"cant":cantidad,"subtotal":subtotal});
+            var subtotal =  (precio*(1+(ganancia/100)))*cantidad ;
+            var precio_final = (precio*(1+(ganancia/100)));
+            additem.push({"oid":productos[i]["oid"],"cod":productos[i]["mate_referencia"],"desc":encodeURIComponent(form["descripcion"].value),"valorunitario":precio_final,"cant":cantidad,"subtotal":subtotal});
+          
+            for (var i in additem){
+              if(productos[i]["oid"] == additem[i]["oid"]){
+                cant_temp = parseFloat(additem[i]["cant"]) + parseFloat(cant_temp);
+              }
+            }
+            
           }
         }
         
         localStorage.setItem("add_item",JSON.stringify(additem));
         actualizar_tabla();
-        clear_();        
+        clear_();
+        
       }
     }
     
@@ -527,7 +564,7 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
     function actualizar_tabla(){
       var tbody = '', c_i=0;
       for(var i in additem){
-        tbody += '<tr><td>'+additem[i]["cod"]+'</td><td>'+additem[i]["desc"]+'</td><td>'+additem[i]["cant"]+'</td><td>$'+new Intl.NumberFormat("en-UK").format(additem[i]["subtotal"])+'</td><td><button onclick="remove_item('+c_i+')" type="button" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button></td></tr>';
+        tbody += '<tr><td>'+additem[i]["cod"]+'</td><td>'+decodeURIComponent(additem[i]["desc"])+'</td><td>'+additem[i]["cant"]+'</td><td>'+additem[i]["valorunitario"]+'</td><td>$'+new Intl.NumberFormat("en-UK").format(additem[i]["subtotal"])+'</td><td><button onclick="remove_item('+c_i+')" type="button" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button></td></tr>';
         c_i++;
       }
       document.getElementById("tbody").innerHTML = tbody;
@@ -546,6 +583,7 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
             form["nombres"].value = arr["data"]["prov_nombre"];
             form["telefonos"].value = arr["data"]["prov_telfijo"]+" "+arr["data"]["prov_telcelular"];
             form["domicilio"].value = arr["data"]["prov_direccion"];
+            form["ciudad"].value = arr["data"]["prov_ciudad"];
           }else{
             notify('Advertencia!','No hay ninguna información con esa identificación. Comprueba de nuevo.','warning');
             param.value = "";
@@ -553,6 +591,7 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
             form["nombres"].value = "";
             form["telefonos"].value = "";
             form["domicilio"].value = "";
+            form["ciudad"].value = "";
           }
         }else{
           notify('Advertencia!','El campo '+param.title+' contiene carácteres inválidos.\nSolo se permiten números.','warning');
@@ -561,11 +600,13 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
           form["nombres"].value = "";
           form["telefonos"].value = "";
           form["domicilio"].value = "";
+          form["ciudad"].value = "";
         }        
       }else{
         form["nombres"].value = "";
         form["telefonos"].value = "";
         form["domicilio"].value = "";
+        form["ciudad"].value = "";
       }
     }
     
@@ -688,7 +729,18 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
       
     }
     
-    
+    function get_entries_form(){
+      
+      var entries = {};
+      for(var i of form){
+        var key = i.id
+        entries[i.id] = i.value;
+      }
+      entries["fechavencimiento"] = form_["fechavencimiento"].value;
+      entries["diasvencimiento"] = form_["diasvencimiento"].value;
+      
+      return entries;
+    }
     
     
     function guardar_venta_contado(arrval){
@@ -696,13 +748,14 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
       if ( sumar_valores_contado() ) {
         var pago = {cheques:parseFloat(form_["cheques"].value),electronica:parseFloat(form_["viaelectronica"].value),efectivo:parseFloat(form_["efectivo"].value),devolucion:parseFloat(form_["devolucion"].value) };
         var arr = send_xhr(null,{items:JSON.stringify(additem),saldos:JSON.stringify(saldos),pago:JSON.stringify(pago),type_xhr:"set_form",fn:"guardar_venta_contado"});
+        var d = Object.assign({items:additem,forma_pago:"CONTADO",cliente:get_entries_form()},saldos,pago);
         
         if (arr["bool"]) {
           if(form_["optcontado"].checked ){
             notify('Mensaje!','La operación fue realizada satisfactoriamente.','success');
             var confimar = confirm("Desea imprimir la factura?");
             if(confimar){
-              Abrir_ventana('?mod=facturacion&sub=nuevaventa');
+              Abrir_ventana('/pages/imprimir.php?f=factura&d='+ btoa(JSON.stringify(d)) );
               window.location.href = url;                    
             }else{
               window.location.href = url;
@@ -721,14 +774,14 @@ $fac = unserialize($cfg['data']['conf_facturacion']);
       
       if ( validarform() ) {
         var arr = send_xhr(form,{items:JSON.stringify(additem),saldos:JSON.stringify(saldos),dv:form_["diasvencimiento"].value,fv:form_["fechavencimiento"].value,type_xhr:"set_form",fn:"guardar_venta_credito"});
-        
+        var d = Object.assign({items:additem,forma_pago:"CREDITO",cliente:get_entries_form()},saldos);
         if (arr["bool"]) {
           if(form_["diasvencimiento"].value !== "" && form_["fechavencimiento"].value !== "" && form_["cliente"].value !== "" && form_["optcredito"].checked ){
             notify('Mensaje!','La operación fue realizada satisfactoriamente.','success');
             var confimar = confirm("Desea imprimir la factura?");
             
             if(confimar){
-              Abrir_ventana('?mod=facturacion&sub=nuevaventa');
+              Abrir_ventana('/pages/imprimir.php?f=factura&d='+ btoa(JSON.stringify(d)) );
               window.location.href = url;                    
             }else{
               window.location.href = url;

@@ -49,7 +49,7 @@ if (isset($_GET['query'])) {
                     </div>
                     <div class="form-group col-md-3 col-sm-3 col-xs-12">
                       <label class="control-label" for="empl_tipoidentificacion_oid">Tipo identificación </label>
-                      <select class="form-control" id="empl_tipoidentificacion_oid" name="empl_tipoidentificacion_oid" required="required" style="width: 100%" title="Tipo identificación">
+                      <select class="form-control" id="empl_tipoidentificacion_oid" name="empl_tipoidentificacion_oid" required="required" data-placeholder="SELECCIONE" style="width: 100%" title="Tipo identificación">
                         <option></option>
                         <?php  
                           
@@ -91,7 +91,7 @@ if (isset($_GET['query'])) {
                 </div>
                 <div class="form-group col-md-3 col-sm-3 col-xs-12">
                   <label class="control-label" for="empl_ciudad">Departamento/Ciudad </label>
-                  <select class="form-control" id="empl_ciudad" name="empl_ciudad" required="required" tabindex="-1" style="width: 100%" title="Departamento / Ciudad">
+                  <select class="form-control" id="empl_ciudad" name="empl_ciudad" required="required" tabindex="-1" style="width: 100%" data-placeholder="SELECCIONE" title="Departamento / Ciudad">
                     <option></option>
                     <?php                      
 
@@ -133,7 +133,7 @@ if (isset($_GET['query'])) {
               <div class="row">
                 <div class="form-group col-md-4 col-sm-4 col-xs-12">
                   <label class="control-label" for="empl_cargo_oid">Cargo </label>
-                  <select class="form-control" id="empl_cargo_oid" name="empl_cargo_oid" required="required" tabindex="-1" style="width: 100%" title="Cargo">
+                  <select class="form-control" id="empl_cargo_oid" name="empl_cargo_oid" required="required" tabindex="-1" data-placeholder="SELECCIONE" style="width: 100%" title="Cargo">
                     <option></option>
                     <?php                      
 
@@ -146,7 +146,7 @@ if (isset($_GET['query'])) {
                 </div>
                 <div class="form-group col-md-3 col-sm-3 col-xs-12">
                   <label class="control-label" for="empl_contrato_oid">Tipo de vinculación </label>
-                  <select class="form-control" id="empl_contrato_oid" name="empl_contrato_oid" required="required" tabindex="-1" style="width: 100%" required="required" title="Tipo de vinculación">
+                  <select class="form-control" id="empl_contrato_oid" name="empl_contrato_oid" required="required" tabindex="-1" data-placeholder="SELECCIONE" style="width: 100%" required="required" title="Tipo de vinculación">
                   <option></option>
                     <?php                      
 
@@ -229,10 +229,7 @@ if (isset($_GET['query'])) {
   <script src="../plugins/flot.curvedlines/curvedLines.js"></script>
   <!-- DateJS -->
   <script src="../plugins/DateJS/build/date.js"></script>
-  <!-- JQVMap -->
-  <script src="../plugins/jqvmap/dist/jquery.vmap.js"></script>
-  <script src="../plugins/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-  <script src="../plugins/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+
 
   <!-- bootstrap-daterangepicker -->
   <script src="../plugins/moment/moment.min.js"></script>

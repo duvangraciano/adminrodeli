@@ -26,7 +26,7 @@ function puertaPrincipal($post,$comp,$compte)
 	$costoml=null;
 	
 	$pp = (object)[];
-	$pp->adaptador = 0.0;
+	$pp->adaptador = 0.0;	
 	$pp->marco = floatval( ( ($alto*2)+$ancho <= 6 ) ? 6 : ceil( ($alto*2)+$ancho ) );
 	$pp->retangular = ( (($alto-0.2)+($ancho-0.04))*2 <= 6 )? 6 : ceil( ($ancho+$alto)*2 );
 	$pp->cuadrado = ceil((($ancho-0.2)*2)+2);
